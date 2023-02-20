@@ -206,7 +206,7 @@ partial class Build
     Target BuildAndRunProfilerCpuLimitTests => _ => _
         .After(BuildProfilerSamples)
         .Description("Run the profiler container tests")
-        .Requires(() => IsLinux && !IsArm64)
+        .Requires(() => IsLinux)
         .Executes(async () =>
         {
             await BuildAndRunProfilerIntegrationTestsInternal("(Category=CpuLimitTest)");
