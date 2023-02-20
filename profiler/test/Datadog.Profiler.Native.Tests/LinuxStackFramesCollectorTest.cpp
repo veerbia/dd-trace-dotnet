@@ -425,7 +425,8 @@ TEST_F(LinuxStackFramesCollectorFixture, CheckProfilerSignalHandlerIsRestoredIfA
     // Disable this check on Alpine due to flackyness
     // Libunwind randomly fails with unw_backtrace2 (from a signal handler)
     // but unw_backtrace
-#ifndef DD_ALPINE
+    // On ARM64, we use CLR stackwalker which does not get native frames
+#if !defined(DD_ALPINE) && !defined(ARM64)
     ValidateCallstack(ips);
 #endif
 
