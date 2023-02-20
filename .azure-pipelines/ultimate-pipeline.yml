@@ -1082,16 +1082,16 @@ stages:
 
 - stage: unit_tests_arm64
   condition: and(succeeded(), eq(variables['isBenchmarksOnlyBuild'], 'False'))
-  dependsOn: [build_arm64_tracer, merge_commit_id]
+  dependsOn: [build_arm64_tracer, build_arm64_profiler, merge_commit_id]
   variables:
     targetShaId: $[ stageDependencies.merge_commit_id.fetch.outputs['set_sha.sha']]
     targetBranch: $[ stageDependencies.merge_commit_id.fetch.outputs['set_sha.branch']]
   jobs:
     - template: steps/update-github-status-jobs.yml
       parameters:
-        jobs: [test]
+        jobs: [managed, native]
 
-    - job: test
+    - job: managed
       timeoutInMinutes: 60 #default value
       pool:
         name: aws-arm64-auto-scaling
@@ -1123,6 +1123,39 @@ stages:
           inputs:
             testResultsFormat: VSTest
             testResultsFiles: tracer/build_data/results/**/*.trx
+          condition: succeededOrFailed()
+
+    - job: native
+      timeoutInMinutes: 60 #default value
+      pool:
+        name: aws-arm64-auto-scaling
+      workspace:
+        clean: all
+      steps:
+        - template: steps/clone-repo.yml
+          parameters:
+            masterCommitId: $(masterCommitId)
+        - template: steps/restore-working-directory.yml
+          parameters:
+            artifact: build-linux-arm64-working-directory
+
+        - task: DownloadPipelineArtifact@2
+          displayName: Download linux profiler binaries
+          inputs:
+            artifact: linux-profiler-binaries-arm64
+            path: $(System.DefaultWorkingDirectory)/profiler/_build
+
+        - template: steps/run-in-docker.yml
+          parameters:
+            build: true
+            baseImage: debian
+            command: "BuildAndRunNativeUnitTests"
+            apiKey: $(DD_LOGGER_DD_API_KEY)
+
+        - task: PublishTestResults@2
+          displayName: publish test results
+          inputs:
+            testResultsFiles: profiler/build_data/*.xml
           condition: succeededOrFailed()
 
 - stage: integration_tests_windows
