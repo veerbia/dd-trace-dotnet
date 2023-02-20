@@ -194,9 +194,11 @@ partial class Build
        {
            var samplesToBuild = ProfilerSamplesSolution.GetProjects("*");
 
+           var targetPlatform = IsArm64 ? MSBuildTargetPlatform.MSIL : TargetPlatform;
+
            DotNetBuild(x => x
                    .SetConfiguration(BuildConfiguration)
-                   .SetTargetPlatform(TargetPlatform)
+                   .SetTargetPlatform(targetPlatform)
                    .SetNoWarnDotNetCore3()
                    .When(!string.IsNullOrEmpty(NugetPackageDirectory), o => o.SetPackageDirectory(NugetPackageDirectory))
                    .CombineWith(samplesToBuild, (c, project) => c
@@ -235,16 +237,17 @@ partial class Build
         var envVars = new Dictionary<string, string>
         {
             {"DD_TESTING_OUPUT_DIR", ProfilerBuildDataDirectory },
-            {"MonitoringHomeDirectory", MonitoringHomeDirectory },
-            {"DD_INTERNAL_PROFILING_ARM64_ENABLED", "1" }
+            {"MonitoringHomeDirectory", MonitoringHomeDirectory }
         };
+
+        var targetPlatform = IsArm64 ? MSBuildTargetPlatform.MSIL : TargetPlatform;
 
         try
         {
             // Run these ones in parallel
             DotNetTest(config => config
                                 .SetConfiguration(BuildConfiguration)
-                                .SetTargetPlatform(TargetPlatform)
+                                .SetTargetPlatform(targetPlatform)
                                 .SetDotnetPath(TargetPlatform)
                                 .SetNoWarnDotNetCore3()
                                 .When(TestAllPackageVersions, o => o.SetProperty("TestAllPackageVersions", "true"))

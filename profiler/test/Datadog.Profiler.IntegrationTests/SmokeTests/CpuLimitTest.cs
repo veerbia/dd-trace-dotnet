@@ -22,7 +22,7 @@ namespace Datadog.Profiler.IntegrationTests.SmokeTests
         }
 
         [Trait("Category", "CpuLimitTest")]
-        [TestAppFact("Samples.BuggyBits", frameworks: new[] {"net7.0"})]
+        [TestAppFact("Samples.BuggyBits")]
         public void CheckCpuLimit(string appName, string framework, string appAssembly)
         {
             var runner = new SmokeTestRunner(appName, framework, appAssembly, commandLine: "--scenario 1", output: _output);
