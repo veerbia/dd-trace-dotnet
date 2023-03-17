@@ -1,0 +1,221 @@
+{
+    "trace": {
+        "root_id": "585745871950871790",
+        "spans": {
+            "585745871950871790": {
+                "org_id": 181701,
+                "trace_id": "2122872997727270132",
+                "span_id": "585745871950871790",
+                "parent_id": "0",
+                "start": 1679088962.118974,
+                "end": 1679088964.075755,
+                "duration": 1.9567813,
+                "type": "custom",
+                "service": "samples.azureservicebus",
+                "name": "Samples.AzureServiceBus.internal",
+                "resource": "RootSpan",
+                "resource_hash": "ced8112bc9c6c60",
+                "host_id": 1337964984,
+                "hostname": "LAPTOP-KUAFQR15",
+                "env": "dev",
+                "host_groups": [
+                    "env:dev"
+                ],
+                "meta": {
+                    "span.kind": "internal",
+                    "language": "dotnet"
+                    "service.version": "1.0.x",
+                    "otel.status_code": "STATUS_CODE_UNSET",
+                    "service.name": "Samples.AzureServiceBus",
+                    "service.instance.id": "41edfa0a-bf0c-42cd-966f-fa2bc174c2b0",
+                    "otel.library.name": "Samples.AzureServiceBus",
+                    "env": "dev",
+                    "version": "1.0.x",
+                    "otel.trace_id": "3bee07842d4e90981d75f5be74cd74f4",
+                },
+                "metrics": {
+                    "process_id": 36948.0,
+                    "_sampling_priority_v1": 1.0
+                },
+                "ingestion_reason": "otel",
+                "children_ids": [
+                    "12853597545246143658"
+                ]
+            },
+            "12853597545246143658": {
+                "org_id": 181701,
+                "trace_id": "2122872997727270132",
+                "span_id": "12853597545246143658",
+                "parent_id": "585745871950871790",
+                "start": 1679088962.284724,
+                "end": 1679088964.072731,
+                "duration": 1.7880065,
+                "type": "custom",
+                "service": "samples.azureservicebus",
+                "name": "Azure.Storage.Blobs.BlobBaseClient.internal",
+                "resource": "BlobBaseClient.DownloadTo",
+                "resource_hash": "139efd556dfe8323",
+                "host_id": 1337964984,
+                "hostname": "LAPTOP-KUAFQR15",
+                "env": "dev",
+                "host_groups": [
+                    "env:dev"
+                ],
+                "meta": {
+                    "span.kind": "internal",
+                    "language": "dotnet"
+                    "otel.status_code": "STATUS_CODE_UNSET",
+                    "az.namespace": "Microsoft.Storage",
+                    "version": "1.0.x",
+                    "otel.library.name": "Azure.Storage.Blobs.BlobBaseClient",
+                    "_dd.agent_version": "7.37.1",
+                    "az.schema_url": "https://opentelemetry.io/schemas/1.17.0",
+                    "service.version": "1.0.x",
+                    "service.instance.id": "41edfa0a-bf0c-42cd-966f-fa2bc174c2b0",
+                    "env": "dev",
+                    "service.name": "Samples.AzureServiceBus",
+                    "otel.trace_id": "3bee07842d4e90981d75f5be74cd74f4"
+                },
+                "metrics": {
+                    "_sampling_priority_v1": 1.0
+                },
+                "ingestion_reason": "otel",
+                "children_ids": [
+                    "15540989569305770431"
+                ]
+            },
+            "15540989569305770431": {
+                "org_id": 181701,
+                "trace_id": "2122872997727270132",
+                "span_id": "15540989569305770431",
+                "parent_id": "12853597545246143658",
+                "start": 1679088962.286595,
+                "end": 1679088964.066521,
+                "duration": 1.7799263,
+                "type": "custom",
+                "service": "samples.azureservicebus",
+                "name": "Azure.Storage.Blobs.BlobBaseClient.internal",
+                "resource": "BlobBaseClient.DownloadStreaming",
+                "resource_hash": "2cbc9f80c34bc394",
+                "host_id": 1337964984,
+                "hostname": "LAPTOP-KUAFQR15",
+                "env": "dev",
+                "host_groups": [
+                    "env:dev"
+                ],
+                "meta": {
+                    "span.kind": "internal",
+                    "language": "dotnet",
+                    "az.schema_url": "https://opentelemetry.io/schemas/1.17.0",
+                    "version": "1.0.x",
+                    "otel.status_code": "STATUS_CODE_UNSET",
+                    "service.instance.id": "41edfa0a-bf0c-42cd-966f-fa2bc174c2b0",
+                    "otel.library.name": "Azure.Storage.Blobs.BlobBaseClient",
+                    "otel.trace_id": "3bee07842d4e90981d75f5be74cd74f4",
+                    "env": "dev",
+                    "az.namespace": "Microsoft.Storage",
+                    "service.name": "Samples.AzureServiceBus",
+                    "service.version": "1.0.x"
+                },
+                "metrics": {
+                    "_sampling_priority_v1": 1.0
+                },
+                "ingestion_reason": "otel",
+                "children_ids": [
+                    "6372246045380640748"
+                ]
+            },
+            "6372246045380640748": {
+                "org_id": 181701,
+                "trace_id": "2122872997727270132",
+                "span_id": "6372246045380640748",
+                "parent_id": "15540989569305770431",
+                "start": 1679088962.308217,
+                "end": 1679088964.034716,
+                "duration": 1.726499,
+                "type": "http",
+                "service": "samples.azureservicebus",
+                "name": "Azure.Core.Http.client",
+                "resource": "Azure.Core.Http.Request",
+                "resource_hash": "a509a3c69ad1028d",
+                "host_id": 1337964984,
+                "hostname": "LAPTOP-KUAFQR15",
+                "env": "dev",
+                "host_groups": [
+                    "env:dev"
+                ],
+                "meta": {
+                    "span.kind": "client",
+                    "language": "dotnet",
+                    "az.namespace": "Microsoft.Storage",
+                    "otel.library.name": "Azure.Core.Http",
+                    "service.name": "Samples.AzureServiceBus",
+                    "otel.status_code": "STATUS_CODE_UNSET",
+                    "az.schema_url": "https://opentelemetry.io/schemas/1.17.0",
+                    "http.user_agent": "azsdk-net-Storage.Blobs/12.15.0 (.NET 7.0.4; Microsoft Windows 10.0.22000)",
+                    "service.version": "1.0.x",
+                    "az.client_request_id": "d55546ba-b665-45b7-b097-98ca04d3c090",
+                    "otel.trace_id": "3bee07842d4e90981d75f5be74cd74f4",
+                    "service.instance.id": "41edfa0a-bf0c-42cd-966f-fa2bc174c2b0",
+                    "az.service_request_id": "e1131257-601e-004a-2318-59979b000000",
+                    "net.peer.name": "azurestoragesamples.blob.core.windows.net",
+                    "http.method": "GET",
+                    "http.host": "azurestoragesamples.blob.core.windows.net",
+                    "env": "dev",
+                    "version": "1.0.x",
+                    "http.status_code": "206",
+                    "http.url": "https://azurestoragesamples.blob.core.windows.net/samples/cloud.jpg",
+                    "http.path_group": "/samples/cloud.jpg"
+                },
+                "metrics": {
+                    "_sampling_priority_v1": 1.0
+                },
+                "ingestion_reason": "otel",
+                "children_ids": [
+                    "3035975290444696604"
+                ]
+            },
+            "3035975290444696604": {
+                "org_id": 181701,
+                "trace_id": "1315862654396347963",
+                "span_id": "3035975290444696604",
+                "parent_id": "2670122327451140828",
+                "start": 1679089146.311693,
+                "end": 1679089150.851831,
+                "duration": 4.5401384,
+                "type": "http",
+                "service": "samples.azureservicebus-http-client",
+                "name": "http.request",
+                "resource": "GET azurestoragesamples.blob.core.windows.net/samples/cloud.jpg",
+                "resource_hash": "9b6c1aa0a3b39225",
+                "host_id": 1337964984,
+                "hostname": "LAPTOP-KUAFQR15",
+                "env": "dev",
+                "host_groups": [
+                    "env:dev"
+                ],
+                "meta": {
+                    "language": ".NET",
+                    "span.kind": "client",
+                    "runtime-id": "ac1ee3c5-1c13-4b20-8a42-b55e00e1417c",
+                    "component": "HttpMessageHandler",
+                    "http-client-handler-type": "System.Net.Http.SocketsHttpHandler",
+                    "http.method": "GET",
+                    "http.host": "azurestoragesamples.blob.core.windows.net",
+                    "env": "dev",
+                    "version": "1.0.x",
+                    "http.status_code": "206",
+                    "http.url": "https://azurestoragesamples.blob.core.windows.net/samples/cloud.jpg",
+                    "http.path_group": "/samples/cloud.jpg"
+                },
+                "metrics": {
+                    "_sampling_priority_v1": 1.0
+                },
+                "ingestion_reason": "otel",
+                "children_ids": []
+            }
+        }
+    },
+    "orphaned": [],
+    "is_truncated": false
+}
