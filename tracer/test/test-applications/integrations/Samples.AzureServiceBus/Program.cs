@@ -23,6 +23,7 @@ public class Program
         using var tracerProvider = Sdk.CreateTracerProviderBuilder()
             .AddSource(serviceName)
             .AddSource("Azure.*")
+            .AddHttpClientInstrumentation()
             .SetResourceBuilder(
                 ResourceBuilder.CreateDefault()
                     .AddService(serviceName: serviceName, serviceVersion: serviceVersion))

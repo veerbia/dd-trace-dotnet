@@ -11,10 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.13.1" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.15.0" />
     <PackageReference Include="OpenTelemetry" Version="1.4.0" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.4.0" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.4.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc9.14" />
   </ItemGroup>
 
 </Project>
