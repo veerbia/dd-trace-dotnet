@@ -507,6 +507,12 @@ stages:
   - job: build
     timeoutInMinutes: 60 #default value
     dependsOn: []
+    strategy:
+      matrix:
+        debian:
+          baseImage: debian
+        alpine:
+          baseImage: alpine
     pool:
       name: aws-arm64-auto-scaling
     workspace:
@@ -520,21 +526,21 @@ stages:
       parameters:
         build: true
         target: builder
-        baseImage: debian
+        baseImage: $(baseImage)
         command: "Clean BuildProfilerHome ExtractDebugInfoLinux"
         retryCountForRunCommand: 1
 
     - publish: $(System.DefaultWorkingDirectory)/profiler/_build
       displayName: Uploading linux profiler output build folder
-      artifact: linux-profiler-binaries-arm64
+      artifact: linux-profiler-binaries-arm64-$(baseImage)
 
     - publish: $(monitoringHome)
       displayName: Uploading linux profiler home artifact
-      artifact: linux-profiler-home-arm64
+      artifact: linux-profiler-home-arm64-$(baseImage)
 
     - publish: $(symbols)
       displayName: Upload linux profiler symbols
-      artifact: linux-profiler-symbols-arm64
+      artifact: linux-profiler-symbols-arm64-$(baseImage)
 
 - stage: package_arm64
   dependsOn: [merge_commit_id, build_arm64_tracer, build_arm64_profiler]
