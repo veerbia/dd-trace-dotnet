@@ -2711,7 +2711,7 @@ stages:
     # Download everything to monitoring home
     # BuildBundleNuget moves everything to the required folders
     - task: DownloadPipelineArtifact@2
-      displayName: Download linux tracer home
+      displayName: Download linux-x64 tracer home
       inputs:
         artifact: linux-tracer-home-centos7
         patterns: |
@@ -2720,7 +2720,7 @@ stages:
         path: $(monitoringHome)
 
     - task: DownloadPipelineArtifact@2
-      displayName: Download alpine tracer home
+      displayName: Download linux-musl-x64 tracer home
       inputs:
         artifact: linux-tracer-home-alpine
         patterns:  |
@@ -2729,9 +2729,18 @@ stages:
         path: $(monitoringHome)
 
     - task: DownloadPipelineArtifact@2
-      displayName: Download arm64 tracer home
+      displayName: Download linux-arm64 tracer home
       inputs:
-        artifact: linux-tracer-home-arm64
+        artifact: linux-tracer-home-arm64-debian
+        patterns:  |
+          **/*.so
+          **/loader.conf
+        path: $(monitoringHome)
+
+    - task: DownloadPipelineArtifact@2
+      displayName: Download linux-musl-arm64 tracer home
+      inputs:
+        artifact: linux-tracer-home-arm64-alpine
         patterns:  |
           **/*.so
           **/loader.conf
@@ -2754,7 +2763,7 @@ stages:
         path: $(monitoringHome)
 
     - task: DownloadPipelineArtifact@2
-      displayName: Download linux profiler home
+      displayName: Download linux-x64 profiler home
       inputs:
         artifact: linux-profiler-home-centos7
         patterns:  |
@@ -2763,7 +2772,7 @@ stages:
         path: $(monitoringHome)
 
     - task: DownloadPipelineArtifact@2
-      displayName: Download alpine profiler home
+      displayName: Download linux-musl-x64 profiler home
       inputs:
         artifact: linux-profiler-home-alpine
         patterns:  |
@@ -2772,9 +2781,18 @@ stages:
         path: $(monitoringHome)
 
     - task: DownloadPipelineArtifact@2
-      displayName: Download arm64 profiler home
+      displayName: Download linux-arm64 profiler home
       inputs:
-        artifact: linux-profiler-home-arm64
+        artifact: linux-profiler-home-arm64-debian
+        patterns:  |
+          **/*.so
+          **/loader.conf
+        path: $(monitoringHome)
+
+    - task: DownloadPipelineArtifact@2
+      displayName: Download linux-musl-arm64 profiler home
+      inputs:
+        artifact: linux-profiler-home-arm64-alpine
         patterns:  |
           **/*.so
           **/loader.conf
@@ -2809,6 +2827,10 @@ stages:
 
     - publish: $(artifacts)/dd-trace-linux-arm64.tar.gz
       displayName: Uploading runner standalone linux-arm64 artifact
+      artifact: runner-standalone-linux-arm64
+
+    - publish: $(artifacts)/dd-trace-linux-musl-arm64.tar.gz
+      displayName: Uploading runner standalone linux-musl-arm64 artifact
       artifact: runner-standalone-linux-arm64
 
     - publish: $(artifacts)/dd-trace-osx-x64.tar.gz
