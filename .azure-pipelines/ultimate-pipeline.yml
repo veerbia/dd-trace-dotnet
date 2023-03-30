@@ -554,6 +554,12 @@ stages:
 
   - job: package
     dependsOn: []
+    strategy:
+      matrix:
+        debian:
+          baseImage: debian
+        alpine:
+          baseImage: alpine
     timeoutInMinutes: 60 #default value
     pool:
       name: aws-arm64-auto-scaling
@@ -567,30 +573,30 @@ stages:
     - task: DownloadPipelineArtifact@2
       displayName: Download tracer arm64 native binary
       inputs:
-        artifact: linux-tracer-home-arm64
+        artifact: linux-tracer-home-arm64-$(baseImage)
         path: $(monitoringHome)
 
     - task: DownloadPipelineArtifact@2
       displayName: Download profiler arm64 native binary
       inputs:
-        artifact: linux-profiler-home-arm64
+        artifact: linux-profiler-home-arm64-$(baseImage)
         path: $(monitoringHome)
 
     - template: steps/run-in-docker.yml
       parameters:
         build: true
         target: builder
-        baseImage: debian
+        baseImage: $(baseImage)
         command: "ZipMonitoringHome"
         retryCountForRunCommand: 1
 
     - publish: $(artifacts)/linux-arm64
       displayName: Upload arm64 packages
-      artifact: linux-packages-arm64
+      artifact: linux-packages-arm64-$(baseImage)
 
     - publish: $(monitoringHome)
       displayName: Upload arm64 monitoring home
-      artifact: linux-monitoring-home-arm64
+      artifact: linux-monitoring-home-arm64-$(baseImage)
 
 - stage: build_macos
   condition: and(succeeded(), eq(variables['isBenchmarksOnlyBuild'], 'False'))
@@ -3102,58 +3108,76 @@ stages:
 
         # Linux packages
         - task: DownloadPipelineArtifact@2
-          displayName: Download linux Alpine packages
+          displayName: Download linux-musl-x64 packages
           inputs:
             artifact: linux-packages-alpine
             path: $(Build.ArtifactStagingDirectory)
 
         - task: DownloadPipelineArtifact@2
-          displayName: Download linux CentOS7 packages
+          displayName: Download linux-x64 packages
           inputs:
             artifact: linux-packages-centos7
             path: $(Build.ArtifactStagingDirectory)
 
         - task: DownloadPipelineArtifact@2
-          displayName: Download linux Arm64 packages
+          displayName: Download linux-arm64 packages
           inputs:
-            artifact: linux-packages-arm64
+            artifact: linux-packages-arm64-debian
+            path: $(Build.ArtifactStagingDirectory)
+
+        - task: DownloadPipelineArtifact@2
+          displayName: Download linux-musl-arm64 packages
+          inputs:
+            artifact: linux-packages-arm64-alpine
             path: $(Build.ArtifactStagingDirectory)
 
         # Linux symbols
         - task: DownloadPipelineArtifact@2
-          displayName: Download linux profiler Alpine symbols
+          displayName: Download linux-musl-x64 profiler symbols
           inputs:
             artifact: linux-profiler-symbols-alpine
             path: $(Build.ArtifactStagingDirectory)/symbols/linux-musl-x64
 
         - task: DownloadPipelineArtifact@2
-          displayName: Download linux profiler CentOS7 symbols
+          displayName: Download linux-x64 profiler symbols
           inputs:
             artifact: linux-profiler-symbols-centos7
             path: $(Build.ArtifactStagingDirectory)/symbols/linux-x64
 
         - task: DownloadPipelineArtifact@2
-          displayName: Download linux profiler Arm64 symbols
+          displayName: Download linux-musl-arm64 profiler symbols
           inputs:
-            artifact: linux-profiler-symbols-arm64
+            artifact: linux-profiler-symbols-arm64-alpine
+            path: $(Build.ArtifactStagingDirectory)/symbols/linux-musl-arm64
+
+        - task: DownloadPipelineArtifact@2
+          displayName: Download linux-arm64 profiler symbols
+          inputs:
+            artifact: linux-profiler-symbols-arm64-debian
             path: $(Build.ArtifactStagingDirectory)/symbols/linux-arm64
 
         - task: DownloadPipelineArtifact@2
-          displayName: Download linux tracer Alpine symbols
+          displayName: Download linux-musl-x64 tracer symbols
           inputs:
             artifact: linux-tracer-symbols-alpine
             path: $(Build.ArtifactStagingDirectory)/symbols/linux-musl-x64
 
         - task: DownloadPipelineArtifact@2
-          displayName: Download linux tracer CentOS7 symbols
+          displayName: Download linux-x64 tracer symbols
           inputs:
             artifact: linux-tracer-symbols-centos7
             path: $(Build.ArtifactStagingDirectory)/symbols/linux-x64
 
         - task: DownloadPipelineArtifact@2
-          displayName: Download linux tracer Arm64 symbols
+          displayName: Download linux-musl-arm64 tracer symbols
           inputs:
-            artifact: linux-tracer-symbols-arm64
+            artifact: linux-tracer-symbols-arm64-alpine
+            path: $(Build.ArtifactStagingDirectory)/symbols/linux-musl-arm64
+
+        - task: DownloadPipelineArtifact@2
+          displayName: Download linux-arm64 tracer symbols
+          inputs:
+            artifact: linux-tracer-symbols-arm64-debian
             path: $(Build.ArtifactStagingDirectory)/symbols/linux-arm64
 
         - bash: |
