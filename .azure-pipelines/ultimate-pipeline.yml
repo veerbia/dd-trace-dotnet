@@ -2801,6 +2801,9 @@ stages:
     - script: tracer\build.cmd CreateBundleHome BuildBundleNuget BuildRunnerTool PackRunnerToolNuget BuildStandaloneTool
       displayName: Build Bundle NuGet and runner tools
 
+    - script: tree $(artifacts)
+      displayName: tree $(artifacts)
+
     - publish: $(artifacts)/nuget/bundle
       displayName: Uploading Bundle package
       artifact: bundle-nuget-package
