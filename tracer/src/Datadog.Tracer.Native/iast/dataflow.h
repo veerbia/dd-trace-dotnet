@@ -64,6 +64,10 @@ namespace iast
         std::vector<WSTRING> _methodIncludeFilters;
         std::vector<WSTRING> _methodExcludeFilters;
 
+        int _callsiteInstrumentedSources = 0;
+        int _callsiteInstrumentedPropagations = 0;
+        int _callsiteInstrumentedSinks = 0;
+
         bool _traceJitMethods = false;
 
     protected:
@@ -75,6 +79,7 @@ namespace iast
         std::map<ModuleID, ModuleAspects*> _moduleAspects;
 
         HRESULT RewriteMethod(MethodInfo* method, ICorProfilerFunctionControl* pFunctionControl);
+        void ProcessIastMetric(iast::InstrumentResult& result);
         MethodInfo* JITProcessMethod(ModuleID moduleId, mdToken methodId, bool isRejit = false);
 
         std::vector<DataflowAspectReference*> GetAspects(ModuleInfo* module);
@@ -115,5 +120,7 @@ namespace iast
 
         bool IsInlineEnabled(ModuleID calleeModuleId, mdToken calleeMethodId);
         bool JITCompilationStarted(ModuleID moduleId, mdToken methodId);
+        void GetIastMetrics(int* callsiteInstrumentedSources, int* callsiteInstrumentedPropagations,
+                            int* callsiteInstrumentedSinks);
     };
 }
