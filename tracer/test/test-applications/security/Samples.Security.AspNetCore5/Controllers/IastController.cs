@@ -41,6 +41,16 @@ namespace Samples.Security.AspNetCore5.Controllers
             return Content("Ok\n");
         }
 
+        [HttpGet("WeakCipher")]
+        [Route("WeakCipher")]
+        public IActionResult WeakCipher()
+        {
+#pragma warning disable SYSLIB0021 // Type or member is obsolete
+            DES.Create().GenerateKey();
+            return Content($"Weak cipher launched.\n");
+#pragma warning restore SYSLIB0021 // Type or member is obsolete
+        }
+
         [HttpGet("WeakHashing")]
         [Route("WeakHashing/{delay1}")]
         public IActionResult WeakHashing(int delay1 = 0, int delay2 = 0)
