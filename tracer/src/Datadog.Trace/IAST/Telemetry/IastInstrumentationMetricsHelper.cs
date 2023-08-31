@@ -50,8 +50,6 @@ internal static class IastInstrumentationMetricsHelper
 
     public static void ReportMetrics()
     {
-        var definitions = InstrumentationDefinitions.GetAllDefinitions(InstrumentationCategory.Iast);
-
         if (_iastEnabled && _verbosityLevel != IastMetricsVerbosityLevel.Off)
         {
             int[] instrumentedSinks = new int[_sinksCount];
@@ -158,7 +156,7 @@ internal static class IastInstrumentationMetricsHelper
 
         foreach (var attribute in attributes)
         {
-            if ((attribute as InstrumentMethodAttribute)?.InstrumentationCategory == InstrumentationCategory.Iast)
+            if ((attribute as InstrumentMethodAttribute)?.InstrumentationCategory.HasFlag(InstrumentationCategory.Iast) == true)
             {
                 counter++;
             }

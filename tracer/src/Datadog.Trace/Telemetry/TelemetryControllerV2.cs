@@ -260,6 +260,8 @@ internal class TelemetryControllerV2 : ITelemetryController
                 in metrics,
                 _products.GetData());
 
+            IastInstrumentationMetricsHelper.ReportIntegrations(input.Integrations);
+
             var data = _dataBuilder.BuildTelemetryData(application, host, in input, _namingVersion, sendAppClosing);
 
             Log.Debug("Pushing telemetry changes");

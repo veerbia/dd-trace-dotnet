@@ -28,7 +28,7 @@ namespace Datadog.Trace.ClrProfiler.AutoInstrumentation.AspNetCore
     MinimumVersion = "2.0.0.0",
     MaximumVersion = "7.*.*.*.*",
     IntegrationName = IntegrationName,
-    InstrumentationCategory = InstrumentationCategory.AppSec)]
+    InstrumentationCategory = InstrumentationCategory.AppSec | InstrumentationCategory.Iast)]
     [InstrumentMethod(
     AssemblyName = "Microsoft.AspNetCore.Mvc.Core",
     TypeName = "Microsoft.AspNetCore.Mvc.ModelBinding.DefaultModelBindingContext",
@@ -39,28 +39,7 @@ namespace Datadog.Trace.ClrProfiler.AutoInstrumentation.AspNetCore
     MaximumVersion = "7.*.*.*.*",
     IntegrationName = IntegrationName,
     CallTargetIntegrationKind = CallTargetKind.Derived,
-    InstrumentationCategory = InstrumentationCategory.AppSec)]
-    [InstrumentMethod(
-    AssemblyName = "Microsoft.AspNetCore.Mvc.Core",
-    TypeName = "Microsoft.AspNetCore.Mvc.ModelBinding.DefaultModelBindingContext",
-    MethodName = "set_Result",
-    ReturnTypeName = ClrNames.Void,
-    ParameterTypeNames = new[] { "Microsoft.AspNetCore.Mvc.ModelBinding.ModelBindingResult" },
-    MinimumVersion = "2.0.0.0",
-    MaximumVersion = "7.*.*.*.*",
-    IntegrationName = IntegrationName,
-    InstrumentationCategory = InstrumentationCategory.Iast)]
-    [InstrumentMethod(
-    AssemblyName = "Microsoft.AspNetCore.Mvc.Core",
-    TypeName = "Microsoft.AspNetCore.Mvc.ModelBinding.DefaultModelBindingContext",
-    MethodName = "set_Result",
-    ReturnTypeName = ClrNames.Void,
-    ParameterTypeNames = new[] { "Microsoft.AspNetCore.Mvc.ModelBinding.ModelBindingResult" },
-    MinimumVersion = "2.0.0.0",
-    MaximumVersion = "7.*.*.*.*",
-    IntegrationName = IntegrationName,
-    CallTargetIntegrationKind = CallTargetKind.Derived,
-    InstrumentationCategory = InstrumentationCategory.Iast)]
+    InstrumentationCategory = InstrumentationCategory.AppSec | InstrumentationCategory.Iast)]
 
     [Browsable(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
