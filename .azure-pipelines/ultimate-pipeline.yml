@@ -1134,7 +1134,8 @@ stages:
       steps:
         - template: steps/clone-repo.yml
           parameters:
-            masterCommitId: $(masterCommitId)
+            targetShaId: $(targetShaId)
+            targetBranch: $(targetBranch)
         - template: steps/restore-working-directory.yml
           parameters:
             artifact: build-linux-arm64-working-directory
@@ -2290,7 +2291,7 @@ stages:
 
 - stage: profiler_integration_tests_arm64
   condition: and(succeeded(), eq(variables['isBenchmarksOnlyBuild'], 'False'))
-  dependsOn: [package_arm64, generate_variables, master_commit_id]
+  dependsOn: [package_arm64, generate_variables, merge_commit_id]
   variables:
     masterCommitId: $[ stageDependencies.master_commit_id.fetch.outputs['set_sha.master']]
     baseImage: debian
@@ -2313,7 +2314,8 @@ stages:
     steps:
     - template: steps/clone-repo.yml
       parameters:
-        masterCommitId: $(masterCommitId)
+        targetShaId: $(targetShaId)
+        targetBranch: $(targetBranch)
 
     - template: steps/restore-working-directory.yml
       parameters:
