@@ -11,16 +11,17 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Datadog.Trace.TestHelpers.Containers;
 using Datadog.Trace.TestHelpers.FluentAssertionsExtensions;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace Datadog.Trace.TestHelpers
+namespace Datadog.Trace.TestHelpers.AutoInstrumentation
 {
-    public class CustomTestFramework : XunitTestFramework
+    public class DockerTestFramework : XunitTestFramework
     {
-        public CustomTestFramework(IMessageSink messageSink)
+        public DockerTestFramework(IMessageSink messageSink)
             : base(messageSink)
         {
             FluentAssertions.Formatting.Formatter.AddFormatter(new DiffPaneModelFormatter());
@@ -40,9 +41,17 @@ namespace Datadog.Trace.TestHelpers
             }
         }
 
-        public CustomTestFramework(IMessageSink messageSink, Type typeTestedAssembly)
+        public DockerTestFramework(IMessageSink messageSink, Type typeTestedAssembly)
             : this(messageSink)
         {
+            Task memoryDumpTask = null;
+
+            if (bool.Parse(Environment.GetEnvironmentVariable("enable_crash_dumps") ?? "false"))
+            {
+                var progress = new Progress<string>(message => messageSink.OnMessage(new DiagnosticMessage(message)));
+                memoryDumpTask = MemoryDumpHelper.InitializeAsync(progress);
+            }
+
             var targetPath = GetMonitoringHomeTargetFrameworkFolder();
 
             if (targetPath != null)
@@ -59,6 +68,15 @@ namespace Datadog.Trace.TestHelpers
 
                 messageSink.OnMessage(new DiagnosticMessage(message));
                 throw new DirectoryNotFoundException(message);
+            }
+
+            try
+            {
+                memoryDumpTask?.GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                messageSink.OnMessage(new DiagnosticMessage($"MemoryDumpHelper initialization failed: {ex}"));
             }
         }
 
@@ -123,6 +141,35 @@ namespace Datadog.Trace.TestHelpers
 
                 var tasks = new List<Task<RunSummary>>();
 
+                var containerFixtures = collections
+                    .SelectMany(c => c.TestCases)
+                    .Select(t => t.Method.ToRuntimeMethod().DeclaringType)
+                    .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IClassFixture<>)))
+                    .ToList();
+
+                foreach (var type in containerFixtures)
+                {
+                    // Retrieve all the types of container fixtures
+                    var fixtureTypes = type.GetInterfaces()
+                        .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IClassFixture<>))
+                        .Select(i => i.GetGenericArguments()[0])
+                        .Where(t => typeof(ContainerFixture).IsAssignableFrom(t))
+                        .ToList();
+
+                    foreach (var fixtureType in fixtureTypes)
+                    {
+                        try
+                        {
+                            var fixture = (ContainerFixture)Activator.CreateInstance(fixtureType);
+                            await fixture!.InitializeAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            DiagnosticMessageSink.OnMessage(new DiagnosticMessage($"ERROR: {fixtureType.Name} ({ex.Message})"));
+                        }
+                    }
+                }
+
                 foreach (var test in collections.Where(t => !t.DisableParallelization))
                 {
                     tasks.Add(runner.RunAsync(async () => await RunTestCollectionAsync(messageBus, test.Collection, test.TestCases, cancellationTokenSource)));
@@ -140,6 +187,8 @@ namespace Datadog.Trace.TestHelpers
                 {
                     summary.Aggregate(await RunTestCollectionAsync(messageBus, test.Collection, test.TestCases, cancellationTokenSource));
                 }
+
+                await ContainersRegistry.DisposeAll();
 
                 return summary;
             }
