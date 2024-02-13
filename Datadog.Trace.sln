@@ -528,11 +528,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sandbox.LegacySecurityPolic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepNestedHierarchy", "tracer\test\test-applications\regression\DeepNestedHierarchy\DeepNestedHierarchy.csproj", "{1B3E6BEE-F7AB-433E-A1D9-E8BE3782419B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples.AWS.Kinesis", "tracer\test\test-applications\integrations\Samples.AWS.Kinesis\Samples.AWS.Kinesis.csproj", "{C7DE0626-9EB6-475E-AA0C-CB9DE21D4FAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.AWS.Kinesis", "tracer\test\test-applications\integrations\Samples.AWS.Kinesis\Samples.AWS.Kinesis.csproj", "{C7DE0626-9EB6-475E-AA0C-CB9DE21D4FAE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.AzureServiceBus", "tracer\test\test-applications\integrations\Samples.AzureServiceBus\Samples.AzureServiceBus.csproj", "{BC44A41F-1BED-4438-9F66-0EA5607906D5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.DataStreams.AzureServiceBus", "tracer\test\test-applications\integrations\Samples.DataStreams.AzureServiceBus\Samples.DataStreams.AzureServiceBus.csproj", "{56DE0D44-E9E5-48DA-BAEA-2934B1E28D4E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.AzureStorageBlobs", "tracer\test\test-applications\integrations\Samples.AzureStorageBlobs\Samples.AzureStorageBlobs.csproj", "{6E5B86E8-3846-489F-9F5E-7FCC78CD13A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1270,6 +1272,10 @@ Global
 		{56DE0D44-E9E5-48DA-BAEA-2934B1E28D4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56DE0D44-E9E5-48DA-BAEA-2934B1E28D4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56DE0D44-E9E5-48DA-BAEA-2934B1E28D4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E5B86E8-3846-489F-9F5E-7FCC78CD13A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E5B86E8-3846-489F-9F5E-7FCC78CD13A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E5B86E8-3846-489F-9F5E-7FCC78CD13A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E5B86E8-3846-489F-9F5E-7FCC78CD13A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1477,6 +1483,7 @@ Global
 		{C7DE0626-9EB6-475E-AA0C-CB9DE21D4FAE} = {BAF8F246-3645-42AD-B1D0-0F7EAFBAB34A}
 		{BC44A41F-1BED-4438-9F66-0EA5607906D5} = {BAF8F246-3645-42AD-B1D0-0F7EAFBAB34A}
 		{56DE0D44-E9E5-48DA-BAEA-2934B1E28D4E} = {BAF8F246-3645-42AD-B1D0-0F7EAFBAB34A}
+		{6E5B86E8-3846-489F-9F5E-7FCC78CD13A1} = {BAF8F246-3645-42AD-B1D0-0F7EAFBAB34A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {160A1D00-1F5B-40F8-A155-621B4459D78F}
