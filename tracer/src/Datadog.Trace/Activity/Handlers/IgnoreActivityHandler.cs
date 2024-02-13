@@ -25,6 +25,7 @@ namespace Datadog.Trace.Activity.Handlers
             "Npgsql",
             "System.Net.Http.Desktop",
             "SqlClientDiagnosticListener",
+            "OpenTelemetry.Instrumentation.Http.HttpWebRequest",
         };
 
         private static readonly string[] IgnoreOperationNamesStartingWith =
