@@ -17,4 +17,4 @@ jobs:
           dotnet-version: '8.0.100'
 
       - name: Build managed and native ARM64 binaries
-        run: .\tracer\build.ps1 Clean BuildTracerHome BuildNativeLoader ExtractDebugInfoLinux
+        run: ./tracer/build.sh Clean BuildTracerHome BuildNativeLoader ExtractDebugInfoLinux
