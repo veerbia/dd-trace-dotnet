@@ -25,10 +25,19 @@ jobs:
           curl -fsSL https://get.docker.com -o get-docker.sh
           sudo sh get-docker.sh
 
-      - name: Build and run debian Docker image
+      - name: Build and run debian Docker image - build
         uses: ./.github/actions/run-in-docker
         with:
           baseImage: ${{ env.baseImage }}
-          target: ${{ env.target }}
+          target: builder
           docker_elevation_argument: sudo
           command: 'Clean BuildTracerHome BuildNativeLoader ExtractDebugInfoLinux'
+
+      - name: Build and run debian Docker image - test
+        uses: ./.github/actions/run-in-docker
+        with:
+          baseImage: ${{ env.baseImage }}
+          target: tester
+          docker_elevation_argument: sudo
+          apiKey: ${{ secrets.DD_API_KEY }}
+          command: 'BuildAndRunManagedUnitTests'

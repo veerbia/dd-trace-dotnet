@@ -18,6 +18,10 @@ inputs:
     description: 'Command to add elevation (if needed)'
     default: ''
 
+  apiKey:
+    description: 'API Key for submitting telemetry'
+    default: ''
+
 runs:
   using: "composite"
   steps:
@@ -45,5 +49,6 @@ runs:
             --env TestAllPackageVersions=false \
             --env IncludeMinorPackageVersions=false \
             --env NUGET_ENABLE_EXPERIMENTAL_HTTP_RETRY=true \
+            --env DD_LOGGER_DD_API_KEY=${{ inputs.apiKey }} \
             dd-trace-dotnet/${{ inputs.baseImage }}-${{ inputs.target }} \
             dotnet /build/bin/Debug/_build.dll ${{ inputs.command }}
