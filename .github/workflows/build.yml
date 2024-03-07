@@ -4,6 +4,14 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  sdkVersion: 8.0.100
+  build: true
+  target: builder
+  baseImage: debian
+  command: "Clean BuildTracerHome BuildNativeLoader ExtractDebugInfoLinux"
+  retryCountForRunCommand: 1
+
 jobs:
   build:
     runs-on: arm-4core-linux
@@ -16,5 +24,16 @@ jobs:
         with:
           dotnet-version: '8.0.100'
 
-      - name: Build managed and native ARM64 binaries
-        run: ./tracer/build.sh Clean BuildTracerHome BuildNativeLoader ExtractDebugInfoLinux
+      - name: Install docker
+        run: |
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sudo sh get-docker.sh
+
+      - name: Build debian Docker image
+        run: |
+          sudo docker build \
+            --build-arg DOTNETSDK_VERSION=$sdkVersion \
+            --tag dd-trace-dotnet/${{ env.baseImage }}-${{ env.target }}:$sdkVersion \
+            --target ${{ env.target }} \
+            --file ./tracer/build/_build/docker/${{ env.baseImage }}.dockerfile \
+            ./tracer/build/_build
