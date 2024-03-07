@@ -3,12 +3,20 @@ description: 'Run command in docker'
 
 inputs:
   command:
-    descritption: 'Command to run'
+    description: 'Command to run'
     default: ''
 
   baseImage:
     description: 'Image to use'
     default: 'centos7'
+
+  target:
+    description: 'Target to run'
+    default: 'builder'
+
+  docker_elevation_argument:
+    description: 'Command to add elevation (if needed)'
+    default: ''
 
 runs:
   using: "composite"
@@ -16,17 +24,17 @@ runs:
     - name: Build on ${{ inputs.baseImage }} Docker image
       shell: bash
       run: |
-        docker build \
+        ${{ inputs.docker_elevation_argument }} docker build \
           --build-arg DOTNETSDK_VERSION=8.0.100 \
-          --tag dd-trace-dotnet/${{ inputs.baseImage }}-builder \
-          --target builder \
+          --tag dd-trace-dotnet/${{ inputs.baseImage }}-${{ inputs.target }} \
+          --target ${{ inputs.target }} \
           --file "${GITHUB_WORKSPACE}/tracer/build/_build/docker/${{ inputs.baseImage }}.dockerfile" \
           "${GITHUB_WORKSPACE}/tracer/build/_build"
 
     - name: Run '${{ inputs.command }}' in Docker
       shell: bash
       run: |
-        docker run --rm \
+        ${{ inputs.docker_elevation_argument }} docker run --rm \
             --mount type=bind,source="${GITHUB_WORKSPACE}",target=/project \
             --env NugetPackageDirectory=/project/packages \
             --env tracerHome=/project/shared/bin/monitoring-home/tracer \
@@ -37,5 +45,5 @@ runs:
             --env TestAllPackageVersions=false \
             --env IncludeMinorPackageVersions=false \
             --env NUGET_ENABLE_EXPERIMENTAL_HTTP_RETRY=true \
-            dd-trace-dotnet/${{ inputs.baseImage }}-builder \
+            dd-trace-dotnet/${{ inputs.baseImage }}-${{ inputs.target }} \
             dotnet /build/bin/Debug/_build.dll ${{ inputs.command }}

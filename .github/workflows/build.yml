@@ -5,12 +5,8 @@ on:
   workflow_dispatch:
 
 env:
-  sdkVersion: 8.0.100
-  build: true
   target: builder
   baseImage: debian
-  command: "Clean BuildTracerHome BuildNativeLoader ExtractDebugInfoLinux"
-  retryCountForRunCommand: 1
 
 jobs:
   build:
@@ -29,11 +25,10 @@ jobs:
           curl -fsSL https://get.docker.com -o get-docker.sh
           sudo sh get-docker.sh
 
-      - name: Build debian Docker image
-        run: |
-          sudo docker build \
-            --build-arg DOTNETSDK_VERSION=$sdkVersion \
-            --tag dd-trace-dotnet/${{ env.baseImage }}-${{ env.target }}:$sdkVersion \
-            --target ${{ env.target }} \
-            --file ./tracer/build/_build/docker/${{ env.baseImage }}.dockerfile \
-            ./tracer/build/_build
+      - name: Build and run debian Docker image
+        uses: ./.github/actions/run-in-docker
+        with:
+          baseImage: ${{ env.baseImage }}
+          target: ${{ env.target }}
+          docker_elevation_argument: sudo
+          command: 'Clean BuildTracerHome BuildNativeLoader ExtractDebugInfoLinux'
