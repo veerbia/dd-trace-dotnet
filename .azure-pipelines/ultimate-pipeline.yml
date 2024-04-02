@@ -1256,6 +1256,8 @@ stages:
             targetBranch: $(targetBranch)
         - template: steps/install-latest-dotnet-sdk.yml
 
+        - script: dotnet --info
+
         - script: tracer\build.cmd $(target)
           displayName: Build sample projects
           retryCountOnTaskFailure: 1
