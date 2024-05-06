@@ -304,6 +304,11 @@ namespace Datadog.Trace.Security.IntegrationTests
             return WaitForSpans(agent, expectedSpans, phase, minDateTime, url);
         }
 
+        protected void SendRequestsNoWait(string url, string body, int numberOfAttacks, string contentType = null, string userAgent = null)
+        {
+            SendRequestsAsyncNoWaitForSpans(url, body, numberOfAttacks, contentType, userAgent).Wait();
+        }
+
         protected IImmutableList<MockSpan> WaitForSpans(MockTracerAgent agent, int expectedSpans, string phase, DateTime minDateTime, string url)
         {
             agent.SpanFilters.Clear();
