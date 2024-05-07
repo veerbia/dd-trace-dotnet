@@ -39,7 +39,7 @@ namespace Datadog.Trace.TestHelpers
 #endif
         }
 
-        public Process Process { get; private set; }
+        public Process Process { get; set; }
 
         public MockTracerAgent.TcpUdpAgent Agent { get; private set; }
 
@@ -165,6 +165,7 @@ namespace Datadog.Trace.TestHelpers
                 }
 
                 Process.Dispose();
+                Process = null;
             }
 
             Agent?.Dispose();

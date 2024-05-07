@@ -44,16 +44,28 @@ public class AspNetCore5RaspPerformance : AspNetBase, IClassFixture<AspNetCoreTe
     }
 
     [SkippableTheory]
-    [InlineData("/Iast/GetFileContent?file=filename", false, false, 100000)]
-    [InlineData("/Iast/GetFileContent?file=filename", true, false, 100000)]
-    [InlineData("/Iast/GetFileContent?file=filename", true, true, 100000)]
-    [InlineData("/Iast/WeakHashing", false, false, 100000)]
-    [InlineData("/Iast/WeakHashing", true, false, 100000)]
-    [InlineData("/Iast/WeakHashing", true, true, 100000)]
+    [InlineData("/Iast/GetFileContent?file=filename", false, false, false, 100000)]
+    [InlineData("/Iast/GetFileContent?file=filename", true, false, false, 100000)]
+    [InlineData("/Iast/GetFileContent?file=filename", false, true, false, 100000)]
+    [InlineData("/Iast/GetFileContent?file=filename", true, true, false, 100000)]
+    [InlineData("/Iast/GetFileContent?file=filename", false, false, true, 100000)]
+    [InlineData("/Iast/GetFileContent?file=filename", true, false, true, 100000)]
+    [InlineData("/Iast/GetFileContent?file=filename", false, true, true, 100000)]
+    [InlineData("/Iast/GetFileContent?file=filename", true, true, true, 100000)]
+    /*
+    [InlineData("/Iast/WeakHashing", false, false, false, 100000)]
+    [InlineData("/Iast/WeakHashing", true, false, false, 100000)]
+    [InlineData("/Iast/WeakHashing", false, true, false, 100000)]
+    [InlineData("/Iast/WeakHashing", true, true, false, 100000)]
+    [InlineData("/Iast/WeakHashing", false, false, true, 100000)]
+    [InlineData("/Iast/WeakHashing", true, false, true, 100000)]
+    [InlineData("/Iast/WeakHashing", false, true, true, 100000)]
+    [InlineData("/Iast/WeakHashing", true, true, true, 100000)]
+    */
     [Trait("RunOnWindows", "True")]
-    public async Task TestRaspRequest(string url, bool enableRasp, bool useRules, int executions)
+    public async Task TestRaspRequest(string url, bool enableRasp, bool useRules, bool iastEnabled, int executions)
     {
-        Init(enableRasp, useRules);
+        Init(enableRasp, useRules, iastEnabled);
         await TryStartApp();
         var agent = Fixture.Agent;
 
@@ -65,17 +77,22 @@ public class AspNetCore5RaspPerformance : AspNetBase, IClassFixture<AspNetCoreTe
 
         var seconds = DateTime.Now.Subtract(time).TotalSeconds;
 
-        LogTime(seconds, enableRasp, useRules, executions, "TestRaspRequest.csv", url);
+        LogTime(seconds, enableRasp, useRules, iastEnabled, executions, "TestRaspRequest.csv", url);
     }
 
     [SkippableTheory]
-    [InlineData("/Iast/WeakHashing", false, false, 50)]
-    [InlineData("/Iast/WeakHashing", true, false, 50)]
-    [InlineData("/Iast/WeakHashing", true, true, 50)]
+    [InlineData("/Iast/WeakHashing", false, false, false, 50)]
+    [InlineData("/Iast/WeakHashing", true, false, false, 50)]
+    [InlineData("/Iast/WeakHashing", false, true, false, 50)]
+    [InlineData("/Iast/WeakHashing", true, true, false, 50)]
+    [InlineData("/Iast/WeakHashing", false, false, true, 50)]
+    [InlineData("/Iast/WeakHashing", true, false, true, 50)]
+    [InlineData("/Iast/WeakHashing", false, true, true, 50)]
+    [InlineData("/Iast/WeakHashing", true, true, true, 50)]
     [Trait("RunOnWindows", "True")]
-    public async Task TestRaspStartup(string url, bool enableRasp, bool useRules, int executions)
+    public async Task TestRaspStartup(string url, bool enableRasp, bool useRules, bool iastEnabled, int executions)
     {
-        Init(enableRasp, useRules);
+        Init(enableRasp, useRules, iastEnabled);
 
         var time = DateTime.Now;
         for (int i = 0; i < executions; i++)
@@ -93,13 +110,14 @@ public class AspNetCore5RaspPerformance : AspNetBase, IClassFixture<AspNetCoreTe
 
         var seconds = DateTime.Now.Subtract(time).TotalSeconds;
 
-        LogTime(seconds, enableRasp, useRules, executions, "TestRaspStartup.csv", url);
+        LogTime(seconds, enableRasp, useRules, iastEnabled, executions, "TestRaspStartup.csv", url);
     }
 
-    private void LogTime(double seconds, bool enableRasp, bool useRules, int executions, string fileName, string url)
+    private void LogTime(double seconds, bool enableRasp, bool useRules, bool iastEnabled, int executions, string fileName, string url)
     {
         // Write the data into a csv file
-        var data = $"RASP: {enableRasp}, UseRules: {useRules}, Executions: {executions}, Time: {seconds}, url:{url}" + Environment.NewLine;
+        var data = $"RASP: {enableRasp}, UseRules: {useRules}, Executions: {executions}, " +
+            $"IAST: {iastEnabled}, Time: {seconds}, url:{url}" + Environment.NewLine;
 
         var path = Directory.GetCurrentDirectory() + "\\performance";
         Directory.CreateDirectory(path);
@@ -107,12 +125,12 @@ public class AspNetCore5RaspPerformance : AspNetBase, IClassFixture<AspNetCoreTe
         File.AppendAllText(pathFile, data);
     }
 
-    private void Init(bool enableRasp, bool useRules)
+    private void Init(bool enableRasp, bool useRules, bool iastEnabled)
     {
         IncludeAllHttpSpans = true;
         EnableRasp(enableRasp);
         SetSecurity(true);
-        EnableIast(false);
+        EnableIast(iastEnabled);
         if (useRules)
         {
             SetEnvironmentVariable(ConfigurationKeys.AppSec.Rules, "rasp-rule-set.json");
