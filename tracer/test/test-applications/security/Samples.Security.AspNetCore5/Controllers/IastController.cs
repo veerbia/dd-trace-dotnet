@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Mail;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
@@ -951,6 +952,13 @@ namespace Samples.Security.AspNetCore5.Controllers
             return View("ReflectedXss");
         }
 
+        [HttpGet("Email")]
+        [Route("Email")]
+        public IActionResult Email(string param)
+        {
+            return View("Email");
+        }
+
         [HttpGet("ReflectedXssEscaped")]
         [Route("ReflectedXssEscaped")]
         public IActionResult ReflectedXssEscaped(string param)
@@ -959,6 +967,31 @@ namespace Samples.Security.AspNetCore5.Controllers
                             + System.Web.HttpUtility.HtmlEncode($"System.Web.HttpUtility.HtmlEncode({param})") + Environment.NewLine;
             ViewData["XSS"] = escapedText;
             return View("ReflectedXss");
+        }
+
+        [HttpGet("SendEmail")]
+        [Route("SendEmail")]
+        public IActionResult SendEmail(string email, string name)
+        {
+            var contentHtml = "<html><body><h1>Hi " + name + "</h1><p>Thanks for subscribing to our newsletter</p></body></html>";
+            var subject = "Welcome to our newsletter";
+            var smtpUsername = "";
+            var smtpPassword = "";
+            var server = "smtp-relay.gmail.com";
+
+            var client = new System.Net.Mail.SmtpClient(server, 25)
+            {
+                Credentials = new System.Net.NetworkCredential(smtpUsername, smtpPassword),
+                EnableSsl = true,
+                Host = server,
+                DeliveryMethod = System.Net.Mail.SmtpDeliveryMethod.Network,
+                Port = 587,
+                Timeout = 200000,
+            };
+
+            client.Send(smtpUsername, email, subject, contentHtml);
+
+            return Content("Email sent");
         }
 
         static string CopyStringAvoidTainting(string original)
