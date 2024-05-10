@@ -6,6 +6,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using Datadog.Trace.AppSec;
 using Datadog.Trace.AppSec.Rcm;
 using Datadog.Trace.AppSec.Waf;
@@ -21,6 +23,34 @@ namespace Datadog.Trace.Rasp.Unit.Tests;
 
 public class RaspWafTests : WafLibraryRequiredTest
 {
+    [Fact]
+    public void SendEmail()
+    {
+        string name = "<style>*{color: transparent;} #bill{color: #000;} #bill a{color: blue;}</style> <p id=\"bill\">Your bill is due, <a href=\"https://malicious_site/paynow\">Pay now</a> or we will charge a late fee.</p>";
+        var contentHtml = "<html><body><h1>Hi " + name + "</h1><p>Thanks for subscribing to our newsletter</p></body></html>";
+        var subject = "Welcome to our newsletter";
+        var smtpUsername = "t";
+        string email = smtpUsername;
+        var smtpPassword = "t";
+        var server = "smtp-mail.outlook.com";
+        int port = 587;
+
+        var mailMessage = new System.Net.Mail.MailMessage();
+        mailMessage.From = new System.Net.Mail.MailAddress(smtpUsername);
+        mailMessage.To.Add(email);
+        mailMessage.Subject = subject;
+        mailMessage.Body = contentHtml;
+        mailMessage.IsBodyHtml = true; // Set to true to indicate that the body is HTML
+
+        var client = new SmtpClient(server, port)
+        {
+            Credentials = new NetworkCredential(smtpUsername, smtpPassword),
+            EnableSsl = true,
+            Timeout = 10000
+        };
+        client.Send(mailMessage);
+    }
+
     [Theory]
     [InlineData("../../../../../../../../../etc/passwd", "../../../../../../../../../etc/passwd", "rasp-001-001", "rasp-rule-set.json", "customblock", BlockingAction.BlockRequestType)]
     public void GivenALfiRule_WhenActionReturnCodeIsChanged_ThenChangesAreApplied(string value, string paramValue, string rule, string ruleFile, string action, string actionType)
