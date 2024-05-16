@@ -682,6 +682,7 @@ namespace Datadog.Trace.Agent.MessagePack
             // add "_dd.top_level" to top-level spans (aka service-entry spans)
             if (span.IsTopLevel && (!Ci.CIVisibility.IsRunning || !Ci.CIVisibility.Settings.Agentless))
             {
+                // TODO: don't use WriteMetric()?
                 count++;
                 WriteMetric(ref bytes, ref offset, Trace.Metrics.TopLevelSpan, 1.0, tagProcessors);
             }
