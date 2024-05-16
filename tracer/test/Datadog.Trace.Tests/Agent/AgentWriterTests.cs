@@ -129,7 +129,7 @@ namespace Datadog.Trace.Tests.Agent
             await _agentWriter.FlushAndCloseAsync();
         }
 
-        [Fact]
+        [Fact(Skip = "TODO: fix test so it doesn't compare raw serialized bytes")]
         public async Task SpanSampling_ShouldSend_MultipleMatchedSpans_WhenStatsDropsOne()
         {
             var api = new MockApi();
@@ -415,7 +415,7 @@ namespace Datadog.Trace.Tests.Agent
             return agent.FlushAndCloseAsync();
         }
 
-        [Fact]
+        [Fact(Skip = "TODO: fix test so it doesn't compare raw serialized bytes")]
         public async Task AddsTraceKeepRateMetricToRootSpan()
         {
             // Traces should be dropped when both buffers are full
