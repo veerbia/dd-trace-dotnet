@@ -50,9 +50,9 @@ namespace Datadog.Trace.Tests.Agent
             var spanContext = new SpanContext(null, traceContext, "service");
             var span = new Span(spanContext, DateTimeOffset.UtcNow) { OperationName = "operation" };
             traceContext.AddSpan(span);
-            traceContext.SetSamplingPriority(new SamplingDecision(priority: SamplingPriorityValues.UserReject, mechanism: SamplingMechanism.Manual, rate: null, limiterRate: null));
+            traceContext.SetSamplingPriority(priority: SamplingPriorityValues.UserReject, mechanism: SamplingMechanism.Manual, rate: null, limiterRate: null);
             span.Finish(); // triggers the span sampler to run
-            var traceChunk = new ArraySegment<Span>(new[] { span });
+            var traceChunk = new ArraySegment<Span>([span]);
 
             agent.WriteTrace(traceChunk);
             await agent.FlushTracesAsync(); // Force a flush to make sure the trace is written to the API
@@ -78,9 +78,9 @@ namespace Datadog.Trace.Tests.Agent
             var spanContext = new SpanContext(null, traceContext, "service");
             var span = new Span(spanContext, DateTimeOffset.UtcNow) { OperationName = "operation" };
             traceContext.AddSpan(span);
-            traceContext.SetSamplingPriority(new SamplingDecision(priority: SamplingPriorityValues.UserReject, mechanism: SamplingMechanism.Manual, rate: null, limiterRate: null));
+            traceContext.SetSamplingPriority(priority: SamplingPriorityValues.UserReject, mechanism: SamplingMechanism.Manual, rate: null, limiterRate: null);
             span.Finish();
-            var traceChunk = new ArraySegment<Span>(new[] { span });
+            var traceChunk = new ArraySegment<Span>([span]);
             var expectedData1 = Vendors.MessagePack.MessagePackSerializer.Serialize(new TraceChunkModel(traceChunk, SamplingPriorityValues.UserKeep), SpanFormatterResolver.Instance);
 
             await agent.FlushTracesAsync(); // Force a flush to make sure the trace is written to the API
@@ -106,7 +106,7 @@ namespace Datadog.Trace.Tests.Agent
             var tracer = new Tracer(settings, agent, sampler: null, scopeManager: null, statsd: null);
 
             var traceContext = new TraceContext(tracer);
-            traceContext.SetSamplingPriority(new SamplingDecision(priority: SamplingPriorityValues.UserReject, mechanism: SamplingMechanism.Manual, rate: null, limiterRate: null));
+            traceContext.SetSamplingPriority(priority: SamplingPriorityValues.UserReject, mechanism: SamplingMechanism.Manual, rate: null, limiterRate: null);
             var rootSpanContext = new SpanContext(null, traceContext, "service");
             var rootSpan = new Span(rootSpanContext, DateTimeOffset.UtcNow) { OperationName = "operation" };
             var keptChildSpan = new Span(new SpanContext(rootSpanContext, traceContext, "service"), DateTimeOffset.UtcNow) { OperationName = "operation" };
@@ -117,7 +117,7 @@ namespace Datadog.Trace.Tests.Agent
             keptChildSpan.Finish();
 
             var expectedChunk = new ArraySegment<Span>([rootSpan, keptChildSpan]);
-            var size = ComputeSize(expectedChunk);
+            // var size = ComputeSize(expectedChunk);
             var expectedData1 = Vendors.MessagePack.MessagePackSerializer.Serialize(new TraceChunkModel(expectedChunk, SamplingPriorityValues.UserKeep), SpanFormatterResolver.Instance);
 
             await agent.FlushTracesAsync(); // Force a flush to make sure the trace is written to the API
@@ -493,13 +493,13 @@ namespace Datadog.Trace.Tests.Agent
             agentWriter.WriteTrace(spans);
 
             // Flush front buffer
-            var firstFlush = agentWriter.FlushTracesAsync();
+            _ = agentWriter.FlushTracesAsync();
 
             // This will swap to the back buffer due front buffer is blocked.
             agentWriter.WriteTrace(spans);
 
             // Flush the second buffer
-            var secondFlush = agentWriter.FlushTracesAsync();
+            _ = agentWriter.FlushTracesAsync();
 
             // This trace will force other buffer swap and then a drop because both buffers are blocked
             agentWriter.WriteTrace(spans);
