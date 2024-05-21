@@ -146,7 +146,7 @@ namespace Datadog.Trace.Tests.Tagging
             deserializedSpan.Tags.Should().Contain(Tags.Env, "Overridden Environment");
             deserializedSpan.Tags.Should().Contain(Tags.Language, TracerConstants.Language);
             deserializedSpan.Tags.Should().Contain(Tags.RuntimeId, Tracer.RuntimeId);
-            deserializedSpan.Tags.Should().Contain(Tags.Propagated.DecisionMaker, "-0"); // the child span is serialized first in the trace chunk
+            deserializedSpan.Tags.Should().Contain(Tags.Propagated.DecisionMaker, "-0"); // the child span is serialized first in the trace chunk, and this tag is added to the first span
             deserializedSpan.Tags.Should().Contain(Tags.Propagated.TraceIdUpper, hexStringTraceId);
             deserializedSpan.Tags.Count.Should().Be(customTagCount + 5);
 
@@ -184,7 +184,7 @@ namespace Datadog.Trace.Tests.Tagging
 
             deserializedSpan.Tags.Should().Contain(Tags.Env, "Overridden Environment");
             deserializedSpan.Tags.Should().Contain(Tags.Language, TracerConstants.Language);
-            deserializedSpan.Tags.Should().Contain(Tags.Propagated.DecisionMaker, "-0"); // the child span is serialize first in the trace chunk
+            deserializedSpan.Tags.Should().Contain(Tags.Propagated.DecisionMaker, "-0"); // the child span is serialized first in the trace chunk, and this tag is added to the first span
             deserializedSpan.Tags.Should().Contain(Tags.Propagated.TraceIdUpper, hexStringTraceId);
             deserializedSpan.Tags.Count.Should().Be(customTagCount + 4);
 
