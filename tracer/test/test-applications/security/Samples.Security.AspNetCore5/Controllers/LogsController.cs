@@ -18,7 +18,7 @@ namespace auth_dotnet.Controllers
                 // about what files can be read. We only allow reading logs that end with "SuccessfulEvents".
                 if (id.EndsWith("SuccessfulEvents", StringComparison.OrdinalIgnoreCase))
                 {
-                    var logContent = System.IO.File.ReadAllText($"{id}.log");
+                    var logContent = System.IO.File.ReadAllText($"{id}");
                     return Ok(logContent);
                 }
                 else
