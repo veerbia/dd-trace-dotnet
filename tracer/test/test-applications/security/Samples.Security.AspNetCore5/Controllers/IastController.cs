@@ -971,27 +971,38 @@ namespace Samples.Security.AspNetCore5.Controllers
 
         [HttpGet("SendEmail")]
         [Route("SendEmail")]
-        public IActionResult SendEmail(string email, string name)
+        public IActionResult SendEmail(string email, string name, string lastname)
         {
-            var contentHtml = "<html><body><h1>Hi " + name + "</h1><p>Thanks for subscribing to our newsletter</p></body></html>";
-            var subject = "Welcome to our newsletter";
-            var smtpUsername = "";
-            var smtpPassword = "";
-            var server = "smtp-relay.gmail.com";
-
-            var client = new System.Net.Mail.SmtpClient(server, 25)
-            {
-                Credentials = new System.Net.NetworkCredential(smtpUsername, smtpPassword),
-                EnableSsl = true,
-                Host = server,
-                DeliveryMethod = System.Net.Mail.SmtpDeliveryMethod.Network,
-                Port = 587,
-                Timeout = 200000,
-            };
-
-            client.Send(smtpUsername, email, subject, contentHtml);
-
+            SendMail(name, lastname, email);
             return Content("Email sent");
+        }
+
+        private static void SendMail(string firstName, string lastName, string email)
+        {
+            string contentHtml = $"Hi {firstName} {lastName}, <br />" +
+                "We appreciate you subscribing to our newsletter. To complete your subscription, kindly click the link below. <br />" +
+                "<a href=\"https://localhost/confirm?token=435345\">Complete your subscription</a>";
+
+            var subject = $"{firstName}, welcome!";
+            var smtpUsername = email;
+            var smtpPassword = "s";
+            var server = "smtp-mail.outlook.com";
+            int port = 587;
+
+            var mailMessage = new System.Net.Mail.MailMessage();
+            mailMessage.From = new System.Net.Mail.MailAddress(smtpUsername);
+            mailMessage.To.Add(email);
+            mailMessage.Subject = subject;
+            mailMessage.Body = contentHtml;
+            mailMessage.IsBodyHtml = true; // Set to true to indicate that the body is HTML
+
+            var client = new SmtpClient(server, port)
+            {
+                Credentials = new NetworkCredential(smtpUsername, smtpPassword),
+                EnableSsl = true,
+                Timeout = 10000
+            };
+            client.Send(mailMessage);
         }
 
         static string CopyStringAvoidTainting(string original)
