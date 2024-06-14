@@ -17,6 +17,9 @@ internal static class Program
 
     private static void ComputeHashNTimes(int times)
     {
+        string h = DateTime.Now.ToString("yyyyMMddHHmmss");
+        File.WriteAllText(h, "test");
+
         for (int i = 0; i < times; i++)
         {
 #pragma warning disable SYSLIB0021 // Type or member is obsolete
