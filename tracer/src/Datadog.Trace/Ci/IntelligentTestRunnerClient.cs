@@ -143,23 +143,22 @@ internal class IntelligentTestRunnerClient
         else
         {
             // Use Agent EVP Proxy
-            var agentUrl = _settings.TracerSettings.ExporterInternal.AgentUriInternal;
             _eventPlatformProxySupport = CIVisibility.EventPlatformProxySupport;
             switch (_eventPlatformProxySupport)
             {
                 case EventPlatformProxySupport.V2:
-                    _settingsUrl = UriHelpers.Combine(agentUrl, $"evp_proxy/v2/{settingsUrlPath}");
-                    _searchCommitsUrl = UriHelpers.Combine(agentUrl, $"evp_proxy/v2/{searchCommitsUrlPath}");
-                    _packFileUrl = UriHelpers.Combine(agentUrl, $"evp_proxy/v2/{packFileUrlPath}");
-                    _skippableTestsUrl = UriHelpers.Combine(agentUrl, $"evp_proxy/v2/{skippableTestsUrlPath}");
-                    _earlyFlakeDetectionTestsUrl = UriHelpers.Combine(agentUrl, $"evp_proxy/v2/{efdTestsUrlPath}");
+                    _settingsUrl = _apiRequestFactory.GetEndpoint($"evp_proxy/v2/{settingsUrlPath}");
+                    _searchCommitsUrl = _apiRequestFactory.GetEndpoint($"evp_proxy/v2/{searchCommitsUrlPath}");
+                    _packFileUrl = _apiRequestFactory.GetEndpoint($"evp_proxy/v2/{packFileUrlPath}");
+                    _skippableTestsUrl = _apiRequestFactory.GetEndpoint($"evp_proxy/v2/{skippableTestsUrlPath}");
+                    _earlyFlakeDetectionTestsUrl = _apiRequestFactory.GetEndpoint($"evp_proxy/v2/{efdTestsUrlPath}");
                     break;
                 case EventPlatformProxySupport.V4:
-                    _settingsUrl = UriHelpers.Combine(agentUrl, $"evp_proxy/v4/{settingsUrlPath}");
-                    _searchCommitsUrl = UriHelpers.Combine(agentUrl, $"evp_proxy/v4/{searchCommitsUrlPath}");
-                    _packFileUrl = UriHelpers.Combine(agentUrl, $"evp_proxy/v4/{packFileUrlPath}");
-                    _skippableTestsUrl = UriHelpers.Combine(agentUrl, $"evp_proxy/v4/{skippableTestsUrlPath}");
-                    _earlyFlakeDetectionTestsUrl = UriHelpers.Combine(agentUrl, $"evp_proxy/v4/{efdTestsUrlPath}");
+                    _settingsUrl = _apiRequestFactory.GetEndpoint($"evp_proxy/v4/{settingsUrlPath}");
+                    _searchCommitsUrl = _apiRequestFactory.GetEndpoint($"evp_proxy/v4/{searchCommitsUrlPath}");
+                    _packFileUrl = _apiRequestFactory.GetEndpoint($"evp_proxy/v4/{packFileUrlPath}");
+                    _skippableTestsUrl = _apiRequestFactory.GetEndpoint($"evp_proxy/v4/{skippableTestsUrlPath}");
+                    _earlyFlakeDetectionTestsUrl = _apiRequestFactory.GetEndpoint($"evp_proxy/v4/{efdTestsUrlPath}");
                     break;
                 default:
                     throw new NotSupportedException("Event platform proxy not supported by the agent.");
@@ -1046,10 +1045,6 @@ internal class IntelligentTestRunnerClient
 
     private async Task<T> WithRetries<T, TState>(Func<TState, bool, Task<T>> sendDelegate, TState state, int numOfRetries)
     {
-        // Because there's an integration to Http requests we need to make sure that if the AssemblyResolver.ctor of the TestPlatform started then it has finished
-        // before continuing to avoid a race condition.
-        await ClrProfiler.AutoInstrumentation.Testing.AssemblyResolverCtorIntegration.WaitForCallToBeCompletedAsync().ConfigureAwait(false);
-
         var retryCount = 1;
         var sleepDuration = 100; // in milliseconds
 
@@ -1156,10 +1151,6 @@ internal class IntelligentTestRunnerClient
 
     private async Task<ProcessHelpers.CommandOutput?> RunGitCommandAsync(string arguments, MetricTags.CIVisibilityCommands ciVisibilityCommand, string? input = null)
     {
-        // Because there's an integration to Process.Start we need to make sure that if the AssemblyResolver.ctor of the TestPlatform started then it has finished
-        // before continuing to avoid a race condition.
-        await ClrProfiler.AutoInstrumentation.Testing.AssemblyResolverCtorIntegration.WaitForCallToBeCompletedAsync().ConfigureAwait(false);
-
         TelemetryFactory.Metrics.RecordCountCIVisibilityGitCommand(ciVisibilityCommand);
         var sw = System.Diagnostics.Stopwatch.StartNew();
         var gitOutput = await ProcessHelpers.RunCommandAsync(
@@ -1169,7 +1160,8 @@ internal class IntelligentTestRunnerClient
                                 _workingDirectory,
                                 outputEncoding: Encoding.Default,
                                 errorEncoding: Encoding.Default,
-                                inputEncoding: Encoding.Default),
+                                inputEncoding: Encoding.Default,
+                                useWhereIsIfFileNotFound: true),
                             input).ConfigureAwait(false);
         TelemetryFactory.Metrics.RecordDistributionCIVisibilityGitCommandMs(ciVisibilityCommand, sw.Elapsed.TotalMilliseconds);
         if (gitOutput is null)

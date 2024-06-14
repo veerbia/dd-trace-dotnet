@@ -5,7 +5,7 @@ cmake_policy(SET CMP0015 NEW)
 # Project definition
 # ******************************************************
 
-project("Datadog.Tracer.Native" VERSION 2.51.0)
+project("Datadog.Tracer.Native" VERSION 2.54.0)
 
 # ******************************************************
 # Environment detection
@@ -194,6 +194,7 @@ add_library("Datadog.Tracer.Native.static" STATIC
         fault_tolerant_tokens.cpp
         fault_tolerant_tracker.cpp
         fault_tolerant_cor_profiler_function_control.cpp
+        threadUtils.cpp
 )
 
 set_target_properties("Datadog.Tracer.Native.static" PROPERTIES PREFIX "")

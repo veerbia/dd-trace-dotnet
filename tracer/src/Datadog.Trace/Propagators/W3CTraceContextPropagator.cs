@@ -132,10 +132,7 @@ namespace Datadog.Trace.Propagators
 
         internal static string CreateTraceParentHeader(SpanContext context)
         {
-            var samplingPriority = context.TraceContext?.SamplingPriority ??
-                                   context.SamplingPriority ?? // should never happen in production, but some tests rely on this
-                                   SamplingPriorityValues.AutoKeep; // fallback
-
+            var samplingPriority = context.GetOrMakeSamplingDecision() ?? SamplingPriorityValues.Default;
             var sampled = SamplingPriorityValues.IsKeep(samplingPriority) ? "01" : "00";
 
 #if NET6_0_OR_GREATER
@@ -154,13 +151,13 @@ namespace Datadog.Trace.Propagators
                 sb.Append("dd=");
 
                 // sampling priority ("s:<value>")
-                if (context.TraceContext?.SamplingPriority is { } samplingPriority)
+                if (context.GetOrMakeSamplingDecision() is { } samplingPriority)
                 {
                     sb.Append("s:").Append(SamplingPriorityValues.ToString(samplingPriority)).Append(TraceStateDatadogPairsSeparator);
                 }
 
                 // origin ("o:<value>")
-                var origin = context.TraceContext?.Origin;
+                var origin = context.Origin;
 
                 if (!string.IsNullOrWhiteSpace(origin))
                 {
@@ -192,8 +189,7 @@ namespace Datadog.Trace.Propagators
                     sb.Length--;
                 }
 
-                // additional tracestate from other vendors
-                var additionalState = context.TraceContext?.AdditionalW3CTraceState;
+                var additionalState = context.AdditionalW3CTraceState;
 
                 if (!string.IsNullOrWhiteSpace(additionalState))
                 {
@@ -326,7 +322,7 @@ namespace Datadog.Trace.Propagators
             return true;
         }
 
-        internal static W3CTraceState ParseTraceState(string header)
+        internal static W3CTraceState ParseTraceState(string? header)
         {
             // header format: "[*,]dd=s:1;o:rum;t.dm:-4;t.usr.id:12345[,*]"
             if (string.IsNullOrWhiteSpace(header))
@@ -334,7 +330,7 @@ namespace Datadog.Trace.Propagators
                 return new W3CTraceState(samplingPriority: null, origin: null, lastParent: ZeroLastParent, propagatedTags: null, additionalValues: null);
             }
 
-            SplitTraceStateValues(header, out var ddValues, out var additionalValues);
+            SplitTraceStateValues(header!, out var ddValues, out var additionalValues);
 
             if (ddValues is null or { Length: < 6 })
             {

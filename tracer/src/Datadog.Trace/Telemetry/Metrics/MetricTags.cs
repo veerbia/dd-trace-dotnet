@@ -226,6 +226,7 @@ internal static class MetricTags
         [Description("integration_name:dotnettest")] DotnetTest,
         [Description("integration_name:selenium")] Selenium,
         [Description("integration_name:directorylistingleak")] DirectoryListingLeak,
+        [Description("integration_name:sessiontimeout")] SessionTimeout,
     }
 
     public enum InstrumentationError
@@ -277,6 +278,7 @@ internal static class MetricTags
         [Description("source_type:http.request.cookie.value")] CookieValue = 9,
         [Description("source_type:http.request.matrix.parameter")] MatrixParameter = 10,
         [Description("source_type:http.request.uri")] RequestUri = 11,
+        [Description("source_type:grpc.request.body")] GrpcRequestBody = 12,
     }
 
     [EnumExtensions]
@@ -307,6 +309,7 @@ internal static class MetricTags
         [Description("vulnerability_type:insecure_auth_protocol")] InsecureAuthProtocol = 22,
         [Description("vulnerability_type:xss")] Xss = 23,
         [Description("vulnerability_type:directory_listing_leak")] DirectoryListingLeak = 24,
+        [Description("vulnerability_type:session_timeout")] SessionTimeout = 25,
     }
 
     public enum CIVisibilityTestFramework

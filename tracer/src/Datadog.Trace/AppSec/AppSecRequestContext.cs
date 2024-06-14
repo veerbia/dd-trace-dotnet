@@ -20,6 +20,7 @@ internal class AppSecRequestContext
     private readonly object _sync = new();
     private readonly List<object> _wafSecurityEvents = new();
     private Dictionary<string, List<Dictionary<string, object>>>? _raspStackTraces = null;
+    private RaspTelemetryHelper? _raspTelemetryHelper = Security.Instance.RaspEnabled ? new RaspTelemetryHelper() : null;
 
     internal void CloseWebSpan(TraceTagCollection tags, Span span)
     {
@@ -35,6 +36,16 @@ internal class AppSecRequestContext
             {
                 span.SetMetaStruct(StackKey, MetaStructHelper.ObjectToByteArray(_raspStackTraces));
             }
+
+            _raspTelemetryHelper?.GenerateRaspSpanMetricTags(span.Tags);
+        }
+    }
+
+    internal void AddRaspSpanMetrics(ulong duration, ulong durationWithBindings)
+    {
+        lock (_sync)
+        {
+            _raspTelemetryHelper?.AddRaspSpanMetrics(duration, durationWithBindings);
         }
     }
 
@@ -56,7 +67,7 @@ internal class AppSecRequestContext
             {
                 _raspStackTraces.Add(ExploitStackKey, new());
             }
-            else if (_raspStackTraces[ExploitStackKey].Count >= maxStackTraces)
+            else if (maxStackTraces > 0 && _raspStackTraces[ExploitStackKey].Count >= maxStackTraces)
             {
                 return;
             }
