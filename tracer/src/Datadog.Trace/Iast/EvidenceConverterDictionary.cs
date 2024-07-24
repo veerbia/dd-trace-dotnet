@@ -106,7 +106,7 @@ internal class EvidenceConverterDictionary
         return result;
     }
 
-    private Dictionary<string, object> CreateRedactedValuePart(string value, Source? source = null)
+    private Dictionary<string, object> CreateRedactedValuePart(string? value, Source? source = null)
     {
         var result = new Dictionary<string, object> { { "redacted", true } };
         TruncationUtils.InsertTruncableValue(result, "pattern", value, _maxValueLength);
@@ -117,6 +117,33 @@ internal class EvidenceConverterDictionary
         }
 
         return result;
+    }
+
+    private void ProcessValuePart(EvidenceConverterHelper.ValuePart? part, List<object> valueParts)
+    {
+        if (part == null)
+        {
+            return;
+        }
+
+        if (part.Value is { IsRedacted: true })
+        {
+            valueParts.Add(CreateRedactedValuePart(part.Value.Value, part.Value.Source));
+        }
+        else if (part.Value is { ShouldRedact: false, Value: not null })
+        {
+            valueParts.Add(CreateValuePart(part.Value.Value, part.Value.Source));
+        }
+        else
+        {
+            foreach (var valuePart in part.Value.Split())
+            {
+                if (valuePart.Value is not null)
+                {
+                    ProcessValuePart(valuePart, valueParts);
+                }
+            }
+        }
     }
 
     private List<object> ToRedactedDictionary(List<object> valueParts, string value, Range[] ranges, Range[]? sensitiveRanges)
@@ -132,24 +159,7 @@ internal class EvidenceConverterDictionary
                 continue;
             }
 
-            if (part.Value is { IsRedacted: true, Value: not null })
-            {
-                valueParts.Add(CreateRedactedValuePart(part.Value.Value, part.Value.Source));
-            }
-            else if (part.Value is { ShouldRedact: false, Value: not null })
-            {
-                valueParts.Add(CreateValuePart(part.Value.Value, part.Value.Source));
-            }
-            else
-            {
-                foreach (var valuePart in part.Value.Split())
-                {
-                    if (valuePart.Value is not null)
-                    {
-                        valueParts.Add(CreateValuePart(valuePart.Value, valuePart.Source));
-                    }
-                }
-            }
+            ProcessValuePart(part, valueParts);
         }
 
         return valueParts;

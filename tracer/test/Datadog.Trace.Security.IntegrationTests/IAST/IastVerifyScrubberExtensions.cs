@@ -70,7 +70,7 @@ namespace Datadog.Trace.Security.IntegrationTests.IAST
                                 return VerifyHelper.ScrubStringTags(target, target.Tags);
                             }
 
-                            // We want to retrieve the iast event data from the meta struct to validate it in snapshots
+                            // We want to retrieve the iast data from the meta struct to validate it in snapshots
                             // But that's hard to debug if we only see the binary data
                             // So move the meta struct iast data to a fake tag to validate it in snapshots
                             if (target.MetaStruct.TryGetValue("iast", out var iast))

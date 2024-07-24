@@ -721,12 +721,18 @@ internal static partial class IastModule
         if (isMetaStructSupported)
         {
             iastEventMetaStruct = vulnerabilityBatch?.ToMessagePack();
-            tags.IastMetaStructTagSizeExceeded = vulnerabilityBatch?.IsTruncated() == true ? "1" : "0";
+            if (vulnerabilityBatch?.IsTruncated() == true)
+            {
+                tags.IastMetaStructTagSizeExceeded = "1";
+            }
         }
         else
         {
             tags.IastJson = vulnerabilityBatch?.ToJson();
-            tags.IastJsonTagSizeExceeded = vulnerabilityBatch?.IsTruncated() == true ? "1" : "0";
+            if (vulnerabilityBatch?.IsTruncated() == true)
+            {
+                tags.IastJsonTagSizeExceeded = "1";
+            }
         }
 
         var scope = tracer.StartActiveInternal(operationName, tags: tags);
