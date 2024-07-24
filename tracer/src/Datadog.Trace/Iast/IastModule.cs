@@ -32,6 +32,7 @@ namespace Datadog.Trace.Iast;
 
 internal static partial class IastModule
 {
+    public const string IastMetaStructKey = "iast";
     public const string HeaderInjectionEvidenceSeparator = ": ";
     private const string OperationNameStackTraceLeak = "stacktrace_leak";
     private const string OperationNameWeakHash = "weak_hashing";
@@ -697,7 +698,7 @@ internal static partial class IastModule
             batch.Add(vulnerability);
         }
 
-        return AddVulnerabilityAsSingleSpan(tracer, integrationId, operationName, batch.ToJson());
+        return AddVulnerabilityAsSingleSpan(tracer, integrationId, operationName, batch);
     }
 
     private static IastModuleResponse AddVulnerabilityAsSingleSpan(Tracer tracer, IntegrationId integrationId, string operationName, Vulnerability vulnerability)
@@ -705,18 +706,36 @@ internal static partial class IastModule
         // we either are not in a request or the distributed tracer returned a scope that cannot be casted to Scope and we cannot access the root span.
         var batch = GetVulnerabilityBatch();
         batch.Add(vulnerability);
-        return AddVulnerabilityAsSingleSpan(tracer, integrationId, operationName, batch.ToJson());
+        return AddVulnerabilityAsSingleSpan(tracer, integrationId, operationName, batch);
     }
 
-    private static IastModuleResponse AddVulnerabilityAsSingleSpan(Tracer tracer, IntegrationId integrationId, string operationName, string vulnsJson)
+    private static IastModuleResponse AddVulnerabilityAsSingleSpan(Tracer tracer, IntegrationId integrationId, string operationName, VulnerabilityBatch? vulnerabilityBatch)
     {
         var tags = new IastTags()
         {
-            IastJson = vulnsJson,
             IastEnabled = "1"
         };
 
+        byte[]? iastEventMetaStruct = null;
+        var isMetaStructSupported = Iast.Instance.IsMetaStructSupported();
+        if (isMetaStructSupported)
+        {
+            iastEventMetaStruct = vulnerabilityBatch?.ToMessagePack();
+            tags.IastMetaStructTagSizeExceeded = vulnerabilityBatch?.IsTruncated() == true ? "1" : "0";
+        }
+        else
+        {
+            tags.IastJson = vulnerabilityBatch?.ToJson();
+            tags.IastJsonTagSizeExceeded = vulnerabilityBatch?.IsTruncated() == true ? "1" : "0";
+        }
+
         var scope = tracer.StartActiveInternal(operationName, tags: tags);
+
+        if (isMetaStructSupported)
+        {
+            scope.Span.SetMetaStruct(IastMetaStructKey, iastEventMetaStruct);
+        }
+
         scope.Span.Type = SpanTypes.IastVulnerability;
         tracer.TracerManager.Telemetry.IntegrationGeneratedSpan(integrationId);
         scope.Span.Context.TraceContext?.SetSamplingPriority(SamplingPriorityValues.UserKeep, SamplingMechanism.Asm);
