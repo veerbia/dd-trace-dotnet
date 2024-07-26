@@ -18,8 +18,8 @@ namespace Datadog.Trace.Iast
         private static ReadOnlySpan<byte> IastJsonBytes => new byte[] { 173, 95, 100, 100, 46, 105, 97, 115, 116, 46, 106, 115, 111, 110 };
         // IastJsonTagSizeExceededBytes = MessagePack.Serialize("_dd.iast.json.tag.size.exceeded");
         private static ReadOnlySpan<byte> IastJsonTagSizeExceededBytes => new byte[] { 191, 95, 100, 100, 46, 105, 97, 115, 116, 46, 106, 115, 111, 110, 46, 116, 97, 103, 46, 115, 105, 122, 101, 46, 101, 120, 99, 101, 101, 100, 101, 100 };
-        // IastMetaStructTagSizeExceededBytes = MessagePack.Serialize("_dd.iast.json.metastruct.size.exceeded");
-        private static ReadOnlySpan<byte> IastMetaStructTagSizeExceededBytes => new byte[] { 217, 38, 95, 100, 100, 46, 105, 97, 115, 116, 46, 106, 115, 111, 110, 46, 109, 101, 116, 97, 115, 116, 114, 117, 99, 116, 46, 115, 105, 122, 101, 46, 101, 120, 99, 101, 101, 100, 101, 100 };
+        // IastMetaStructTagSizeExceededBytes = MessagePack.Serialize("_dd.iast.metastruct.tag.size.exceeded");
+        private static ReadOnlySpan<byte> IastMetaStructTagSizeExceededBytes => new byte[] { 217, 37, 95, 100, 100, 46, 105, 97, 115, 116, 46, 109, 101, 116, 97, 115, 116, 114, 117, 99, 116, 46, 116, 97, 103, 46, 115, 105, 122, 101, 46, 101, 120, 99, 101, 101, 100, 101, 100 };
         // IastEnabledBytes = MessagePack.Serialize("_dd.iast.enabled");
         private static ReadOnlySpan<byte> IastEnabledBytes => new byte[] { 176, 95, 100, 100, 46, 105, 97, 115, 116, 46, 101, 110, 97, 98, 108, 101, 100 };
 
@@ -29,7 +29,7 @@ namespace Datadog.Trace.Iast
             {
                 "_dd.iast.json" => IastJson,
                 "_dd.iast.json.tag.size.exceeded" => IastJsonTagSizeExceeded,
-                "_dd.iast.json.metastruct.size.exceeded" => IastMetaStructTagSizeExceeded,
+                "_dd.iast.metastruct.tag.size.exceeded" => IastMetaStructTagSizeExceeded,
                 "_dd.iast.enabled" => IastEnabled,
                 _ => base.GetTag(key),
             };
@@ -45,7 +45,7 @@ namespace Datadog.Trace.Iast
                 case "_dd.iast.json.tag.size.exceeded": 
                     IastJsonTagSizeExceeded = value;
                     break;
-                case "_dd.iast.json.metastruct.size.exceeded": 
+                case "_dd.iast.metastruct.tag.size.exceeded": 
                     IastMetaStructTagSizeExceeded = value;
                     break;
                 case "_dd.iast.enabled": 
@@ -71,7 +71,7 @@ namespace Datadog.Trace.Iast
 
             if (IastMetaStructTagSizeExceeded is not null)
             {
-                processor.Process(new TagItem<string>("_dd.iast.json.metastruct.size.exceeded", IastMetaStructTagSizeExceeded, IastMetaStructTagSizeExceededBytes));
+                processor.Process(new TagItem<string>("_dd.iast.metastruct.tag.size.exceeded", IastMetaStructTagSizeExceeded, IastMetaStructTagSizeExceededBytes));
             }
 
             if (IastEnabled is not null)
@@ -100,7 +100,7 @@ namespace Datadog.Trace.Iast
 
             if (IastMetaStructTagSizeExceeded is not null)
             {
-                sb.Append("_dd.iast.json.metastruct.size.exceeded (tag):")
+                sb.Append("_dd.iast.metastruct.tag.size.exceeded (tag):")
                   .Append(IastMetaStructTagSizeExceeded)
                   .Append(',');
             }

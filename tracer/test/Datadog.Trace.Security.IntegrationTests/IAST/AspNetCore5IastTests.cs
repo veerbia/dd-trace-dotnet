@@ -321,7 +321,7 @@ public abstract class AspNetCore5IastTests50PctSamplingIastEnabled : AspNetCore5
     {
     }
 
-    public override async Task TryStartApp()
+    public override async Task TryStartApp(MockTracerAgent.AgentConfiguration agentConfiguration = null)
     {
         EnableIast(IastEnabled);
         EnableEvidenceRedaction(RedactionEnabled);
@@ -422,13 +422,32 @@ public class AspNetCore5IastTestsSpanTelemetryIastEnabled : AspNetCore5IastTests
         var filename = "Iast.JsonTagSizeExceeded.AspNetCore5.TelemetryEnabled";
         var url = "/Iast/TestJsonTagSizeExceeded?tainted=taint";
         IncludeAllHttpSpans = true;
-        await TryStartApp();
+        await TryStartApp(new MockTracerAgent.AgentConfiguration { SpanMetaStructs = false });
         var agent = Fixture.Agent;
         var spans = await SendRequestsAsync(agent, new string[] { url });
         var spansFiltered = spans.Where(x => x.Type == SpanTypes.Web).ToList();
 
         var settings = VerifyHelper.GetSpanVerifierSettings();
         settings.AddIastScrubbing();
+        await VerifyHelper.VerifySpans(spansFiltered, settings)
+                          .UseFileName(filename)
+                          .DisableRequireUniquePrefix();
+    }
+
+    [SkippableFact]
+    [Trait("RunOnWindows", "True")]
+    public async Task TestIastMetaStructTagSizeExceeded()
+    {
+        var filename = "Iast.MetaStructTagSizeExceeded.AspNetCore5.TelemetryEnabled";
+        var url = "/Iast/TestJsonTagSizeExceeded?tainted=taint";
+        IncludeAllHttpSpans = true;
+        await TryStartApp();
+        var agent = Fixture.Agent;
+        var spans = await SendRequestsAsync(agent, new string[] { url });
+        var spansFiltered = spans.Where(x => x.Type == SpanTypes.Web).ToList();
+
+        var settings = VerifyHelper.GetSpanVerifierSettings();
+        settings.AddIastScrubbing(forceMetaStruct: true);
         await VerifyHelper.VerifySpans(spansFiltered, settings)
                           .UseFileName(filename)
                           .DisableRequireUniquePrefix();
@@ -1451,12 +1470,12 @@ public abstract class AspNetCore5IastTests : AspNetBase, IClassFixture<AspNetCor
         Fixture.SetOutput(null);
     }
 
-    public virtual async Task TryStartApp()
+    public virtual async Task TryStartApp(MockTracerAgent.AgentConfiguration agentConfiguration = null)
     {
-        await TryStartApp(Fixture);
+        await TryStartApp(Fixture, agentConfiguration);
     }
 
-    public virtual async Task TryStartApp(AspNetCoreTestFixture fixture)
+    public virtual async Task TryStartApp(AspNetCoreTestFixture fixture, MockTracerAgent.AgentConfiguration agentConfiguration = null)
     {
         EnableIast(IastEnabled);
         EnableEvidenceRedaction(RedactionEnabled);
@@ -1465,7 +1484,7 @@ public abstract class AspNetCore5IastTests : AspNetBase, IClassFixture<AspNetCor
         SetEnvironmentVariable(ConfigurationKeys.Iast.IsIastDeduplicationEnabled, IsIastDeduplicationEnabled?.ToString() ?? string.Empty);
         SetEnvironmentVariable(ConfigurationKeys.Iast.VulnerabilitiesPerRequest, VulnerabilitiesPerRequest?.ToString() ?? string.Empty);
         SetEnvironmentVariable(ConfigurationKeys.Iast.RequestSampling, SamplingRate?.ToString() ?? string.Empty);
-        await fixture.TryStartApp(this, enableSecurity: false);
+        await fixture.TryStartApp(this, enableSecurity: false, agentConfiguration: agentConfiguration);
         SetHttpPort(fixture.HttpPort);
     }
 

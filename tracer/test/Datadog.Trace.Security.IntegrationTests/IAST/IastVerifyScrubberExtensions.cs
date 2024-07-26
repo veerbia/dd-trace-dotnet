@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Datadog.Trace.TestHelpers;
-using Newtonsoft.Json;
+using Datadog.Trace.Vendors.Newtonsoft.Json;
 using VerifyTests;
 
 namespace Datadog.Trace.Security.IntegrationTests.IAST
@@ -78,7 +78,7 @@ namespace Datadog.Trace.Security.IntegrationTests.IAST
                                 var iastMetaStruct = MetaStructByteArrayToObject.Invoke(null, [iast]);
                                 var json = JsonConvert.SerializeObject(iastMetaStruct);
                                 var obj = JsonConvert.DeserializeObject(json);
-                                var orderedJson = JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                                var orderedJson = JsonConvert.SerializeObject(obj, Formatting.Indented);
                                 target.Tags[Tags.IastJson] = orderedJson;
 
                                 target.MetaStruct.Remove("iast");
