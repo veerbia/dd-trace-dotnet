@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Optimize>true</Optimize>
     <IsPackable>false</IsPackable>
     <OutputType>Library</OutputType>
     <SignAssembly>False</SignAssembly>
