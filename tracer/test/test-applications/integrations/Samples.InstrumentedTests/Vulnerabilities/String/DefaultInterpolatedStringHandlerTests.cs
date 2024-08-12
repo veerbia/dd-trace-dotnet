@@ -1,10 +1,11 @@
 using System.Runtime.CompilerServices;
+using FluentAssertions;
 using Xunit;
 
 namespace Samples.InstrumentedTests.Iast.Vulnerabilities.StringPropagation;
 public class DefaultInterpolatedStringHandlerTests : InstrumentationTestsBase
 {
-    protected string TaintedString = "TaintedString";
+    protected string TaintedString = "tainted";
     protected string NotTaintedString = "TaintedString333";
 
     // Not testing generics until they are fully supported:
@@ -21,9 +22,8 @@ public class DefaultInterpolatedStringHandlerTests : InstrumentationTestsBase
     [Fact]
     public void GivenATaintedString_WhenCallingConcatOptimized_ResultIsTainted()
     {
-        var t = TaintedString + "w";
         var result = $"Hi {TaintedString} {NotTaintedString}.";
-        AssertTainted(result);
+        FormatTainted(result).Should().Be("Hi :+-tainted-+: TaintedString333.");
     }
 
 #if NET6_0_OR_GREATER
@@ -34,7 +34,7 @@ public class DefaultInterpolatedStringHandlerTests : InstrumentationTestsBase
         DefaultInterpolatedStringHandler handler = new();
         handler.AppendFormatted(TaintedString);
         var result = handler.ToString();
-        AssertTainted(result);
+        FormatTainted(result).Should().Be(":+-tainted-+:");
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class DefaultInterpolatedStringHandlerTests : InstrumentationTestsBase
         DefaultInterpolatedStringHandler handler = new();
         handler.AppendFormatted(TaintedString, 0);
         var result = handler.ToString();
-        AssertTainted(result);
+        FormatTainted(result).Should().Be(":+-tainted-+:");
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class DefaultInterpolatedStringHandlerTests : InstrumentationTestsBase
         DefaultInterpolatedStringHandler handler = new();
         handler.AppendFormatted(TaintedString, 0, "format");
         var result = handler.ToString();
-        AssertTainted(result);
+        FormatTainted(result).Should().Be(":+-tainted-+:");
     }
 
     [Fact]
@@ -61,7 +61,17 @@ public class DefaultInterpolatedStringHandlerTests : InstrumentationTestsBase
         DefaultInterpolatedStringHandler handler = new();
         handler.AppendFormatted((object)TaintedString, 0, "format");
         var result = handler.ToString();
-        AssertTainted(result);
+        FormatTainted(result).Should().Be(":+-tainted-+:");
+    }
+
+    [Fact]
+    public void GivenATaintedString_WhenCallingAppendLiteral_ResultIsTainted()
+    {
+        DefaultInterpolatedStringHandler handler = new();
+        handler.AppendFormatted(TaintedString);
+        handler.AppendLiteral("literal");
+        var result = handler.ToString();
+        FormatTainted(result).Should().Be(":+-tainted-+:literal");
     }
 
     [Fact]
@@ -69,9 +79,8 @@ public class DefaultInterpolatedStringHandlerTests : InstrumentationTestsBase
     {
         DefaultInterpolatedStringHandler handler = new();
         handler.AppendFormatted(TaintedString);
-        handler.AppendLiteral("literal");
         var result = handler.ToStringAndClear();
-        AssertTainted(result);
+        FormatTainted(result).Should().Be(":+-tainted-+:");
     }
 
 #endif
