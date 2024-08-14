@@ -1,5 +1,8 @@
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using FluentAssertions;
+using Moq;
 using Xunit;
 
 namespace Samples.InstrumentedTests.Iast.Vulnerabilities.StringPropagation;
@@ -32,16 +35,25 @@ public class DefaultInterpolatedStringHandlerTests : InstrumentationTestsBase
     public void GivenATaintedString_WhenCallingAppendFormatted_ResultIsTainted()
     {
         DefaultInterpolatedStringHandler handler = new();
-        handler.AppendFormatted(TaintedString);
+        string t = TaintedString + " w ";
+        new HMACMD5().ComputeHash(new Mock<Stream>().Object);
+        handler.AppendFormatted(t);
+        NewMethod(handler, TaintedString);
         var result = handler.ToString();
         FormatTainted(result).Should().Be(":+-tainted-+:");
+    }
+
+    private DefaultInterpolatedStringHandler NewMethod(DefaultInterpolatedStringHandler handler, string t)
+    {
+        handler.AppendFormatted(t);
+        return handler;
     }
 
     [Fact]
     public void GivenATaintedString_WhenCallingAppendFormatted_ResultIsTainted2()
     {
         DefaultInterpolatedStringHandler handler = new();
-        handler.AppendFormatted(TaintedString, 0);
+        handler.AppendFormatted(TaintedString, 2);
         var result = handler.ToString();
         FormatTainted(result).Should().Be(":+-tainted-+:");
     }
@@ -50,7 +62,7 @@ public class DefaultInterpolatedStringHandlerTests : InstrumentationTestsBase
     public void GivenATaintedString_WhenCallingAppendFormatted_ResultIsTainted3()
     {
         DefaultInterpolatedStringHandler handler = new();
-        handler.AppendFormatted(TaintedString, 0, "format");
+        handler.AppendFormatted(TaintedString, 2, "format");
         var result = handler.ToString();
         FormatTainted(result).Should().Be(":+-tainted-+:");
     }
@@ -59,7 +71,7 @@ public class DefaultInterpolatedStringHandlerTests : InstrumentationTestsBase
     public void GivenATaintedString_WhenCallingAppendFormatted_ResultIsTainted4()
     {
         DefaultInterpolatedStringHandler handler = new();
-        handler.AppendFormatted((object)TaintedString, 0, "format");
+        handler.AppendFormatted((object)TaintedString, 3, "format");
         var result = handler.ToString();
         FormatTainted(result).Should().Be(":+-tainted-+:");
     }

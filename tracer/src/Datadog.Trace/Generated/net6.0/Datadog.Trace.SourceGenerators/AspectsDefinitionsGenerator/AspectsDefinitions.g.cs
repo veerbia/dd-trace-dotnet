@@ -446,6 +446,8 @@ namespace Datadog.Trace.ClrProfiler
 "[AspectClass(\"mscorlib,System.Runtime.Extensions,System.Runtime\",[None],Sink,[WeakRandomness])] Datadog.Trace.Iast.Aspects.RandomAspect",
 "  [AspectMethodInsertAfter(\"System.Random::.ctor()\",\"\",[0],[False],[None],Default,[])] Init()",
 "  [AspectMethodInsertAfter(\"System.Random::.ctor(System.Int32)\",\"\",[0],[False],[None],Default,[])] Init()",
+"[AspectClass(\"mscorlib,netstandard,System.Private.CoreLib,System.Runtime\",[StringOptimization],Propagation,[])] Datadog.Trace.Iast.Aspects.System.DefaultInterpolatedStringHandlerAspect",
+"  [AspectMethodReplace(\"System.Runtime.CompilerServices.DefaultInterpolatedStringHandlerrrr::AppendFormatted(System.String)\",\"\",[0],[False],[None],Default,[])] AppendFormatted(System.Runtime.CompilerServices.DefaultInterpolatedStringHandler,System.String)",
 "[AspectClass(\"mscorlib,netstandard,System.Private.CoreLib,System.Runtime\",[StringOptimization],Propagation,[])] Datadog.Trace.Iast.Aspects.System.StringAspects",
 "  [AspectMethodReplace(\"System.String::Trim()\",\"\",[0],[False],[StringLiteral_0],Default,[])] Trim(System.String)",
 "  [AspectMethodReplace(\"System.String::Trim(System.Char[])\",\"\",[0],[False],[StringLiteral_0],Default,[])] Trim(System.String,System.Char[])",
