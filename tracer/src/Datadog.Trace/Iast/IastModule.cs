@@ -711,10 +711,8 @@ internal static partial class IastModule
 
     private static IastModuleResponse AddVulnerabilityAsSingleSpan(Tracer tracer, IntegrationId integrationId, string operationName, VulnerabilityBatch? vulnerabilityBatch)
     {
-        var tags = new IastTags()
-        {
-            IastEnabled = "1"
-        };
+        var tags = new IastTags { IastEnabled = "1" };
+        var scope = tracer.StartActiveInternal(operationName, tags: tags);
 
         byte[]? iastEventMetaStruct = null;
         var isMetaStructSupported = Iast.Instance.IsMetaStructSupported();
@@ -723,7 +721,7 @@ internal static partial class IastModule
             iastEventMetaStruct = vulnerabilityBatch?.ToMessagePack();
             if (vulnerabilityBatch?.IsTruncated() == true)
             {
-                tags.IastMetaStructTagSizeExceeded = "1";
+                scope.Span.SetTag(Tags.IastMetaStructTagSizeExceeded, "1");
             }
         }
         else
@@ -731,11 +729,9 @@ internal static partial class IastModule
             tags.IastJson = vulnerabilityBatch?.ToJson();
             if (vulnerabilityBatch?.IsTruncated() == true)
             {
-                tags.IastJsonTagSizeExceeded = "1";
+                scope.Span.SetTag(Tags.IastJsonTagSizeExceeded, "1");
             }
         }
-
-        var scope = tracer.StartActiveInternal(operationName, tags: tags);
 
         if (isMetaStructSupported)
         {
