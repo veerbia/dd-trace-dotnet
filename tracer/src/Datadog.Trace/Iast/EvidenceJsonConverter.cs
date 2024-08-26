@@ -1,4 +1,4 @@
-// <copyright file="EvidenceConverterJson.cs" company="Datadog">
+// <copyright file="EvidenceJsonConverter.cs" company="Datadog">
 // Unless explicitly stated otherwise all files in this repository are licensed under the Apache 2 License.
 // This product includes software developed at Datadog (https://www.datadoghq.com/). Copyright 2017 Datadog, Inc.
 // </copyright>
@@ -18,7 +18,7 @@ namespace Datadog.Trace.Iast;
 /// <summary>
 /// Custom JSON serializer for <see cref="Datadog.Trace.Iast.Evidence"/> struct
 /// </summary>
-internal class EvidenceConverterJson : JsonConverter<Evidence?>
+internal class EvidenceJsonConverter : JsonConverter<Evidence?>
 {
     // When not redacted output is:
     // "valueParts": [
@@ -40,13 +40,13 @@ internal class EvidenceConverterJson : JsonConverter<Evidence?>
     // Explanation:
     //   Input is a string value, tainted ranges and sensitive ranges.
     //   We must produce an array of "value parts", with are segments of the input value.
-    //   Non sensitive parts are plain text. Sensitive ranges must be redacted.
+    //   Non-sensitive parts are plain text. Sensitive ranges must be redacted.
     //   If a tainted range intersects with a sensitive range, the corresponding source must be redacted also.
 
     private bool _redactionEnabled;
     private int _maxValueLength;
 
-    public EvidenceConverterJson(int maxValueLength, bool redactionEnabled)
+    public EvidenceJsonConverter(int maxValueLength, bool redactionEnabled)
     {
         _redactionEnabled = redactionEnabled;
         _maxValueLength = maxValueLength;

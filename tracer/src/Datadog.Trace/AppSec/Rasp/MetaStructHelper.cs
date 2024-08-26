@@ -129,7 +129,7 @@ internal static class MetaStructHelper
 
                 if (vulnerability.Evidence.HasValue)
                 {
-                    vulnerabilityDictionary["evidence"] = new EvidenceConverterDictionary(truncationMaxValueLength, redactionEnabled).EvidenceToDictionary(vulnerability.Evidence.Value);
+                    vulnerabilityDictionary["evidence"] = new EvidenceDictionaryConverter(truncationMaxValueLength, redactionEnabled).EvidenceToDictionary(vulnerability.Evidence.Value);
                 }
 
                 vulnerabilitiesList.Add(vulnerabilityDictionary);
@@ -143,7 +143,7 @@ internal static class MetaStructHelper
             var sourcesList = new List<Dictionary<string, object>>(vulnerabilityBatch.Sources.Count);
             foreach (var source in vulnerabilityBatch.Sources)
             {
-                sourcesList.Add(SourceConverterDictionary.ToDictionary(source, truncationMaxValueLength));
+                sourcesList.Add(source.ToDictionary(truncationMaxValueLength));
             }
 
             result["sources"] = sourcesList;

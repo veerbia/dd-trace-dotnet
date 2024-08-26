@@ -1,4 +1,4 @@
-// <copyright file="EvidenceConverterDictionary.cs" company="Datadog">
+// <copyright file="EvidenceDictionaryConverter.cs" company="Datadog">
 // Unless explicitly stated otherwise all files in this repository are licensed under the Apache 2 License.
 // This product includes software developed at Datadog (https://www.datadoghq.com/). Copyright 2017 Datadog, Inc.
 // </copyright>
@@ -12,7 +12,7 @@ namespace Datadog.Trace.Iast;
 /// <summary>
 /// Serialize <see cref="Datadog.Trace.Iast.Evidence"/> struct to a dictionary
 /// </summary>
-internal class EvidenceConverterDictionary
+internal class EvidenceDictionaryConverter
 {
     // When not redacted output is:
     // "valueParts": [
@@ -40,7 +40,7 @@ internal class EvidenceConverterDictionary
     private bool _redactionEnabled;
     private int _maxValueLength;
 
-    public EvidenceConverterDictionary(int maxValueLength, bool redactionEnabled)
+    public EvidenceDictionaryConverter(int maxValueLength, bool redactionEnabled)
     {
         _redactionEnabled = redactionEnabled;
         _maxValueLength = maxValueLength;
@@ -52,7 +52,7 @@ internal class EvidenceConverterDictionary
 
         if (evidence.Ranges == null || evidence.Ranges.Length == 0)
         {
-            TruncationUtils.InsertTruncableValue(result, "value", evidence.Value, _maxValueLength);
+            TruncationUtils.InsertTruncatableValue(result, "value", evidence.Value, _maxValueLength);
         }
         else
         {
@@ -96,7 +96,7 @@ internal class EvidenceConverterDictionary
     private Dictionary<string, object> CreateValuePart(string value, Source? source = null)
     {
         var result = new Dictionary<string, object>();
-        TruncationUtils.InsertTruncableValue(result, "value", value, _maxValueLength);
+        TruncationUtils.InsertTruncatableValue(result, "value", value, _maxValueLength);
 
         if (source != null)
         {
@@ -109,7 +109,7 @@ internal class EvidenceConverterDictionary
     private Dictionary<string, object> CreateRedactedValuePart(string? value, Source? source = null)
     {
         var result = new Dictionary<string, object> { { "redacted", true } };
-        TruncationUtils.InsertTruncableValue(result, "pattern", value, _maxValueLength);
+        TruncationUtils.InsertTruncatableValue(result, "pattern", value, _maxValueLength);
 
         if (source != null)
         {

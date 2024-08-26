@@ -1,4 +1,4 @@
-// <copyright file="SourceConverterDictionary.cs" company="Datadog">
+// <copyright file="SourceDictionaryConverter.cs" company="Datadog">
 // Unless explicitly stated otherwise all files in this repository are licensed under the Apache 2 License.
 // This product includes software developed at Datadog (https://www.datadoghq.com/). Copyright 2017 Datadog, Inc.
 // </copyright>
@@ -12,7 +12,7 @@ namespace Datadog.Trace.Iast;
 /// <summary>
 /// Convert <see cref="Datadog.Trace.Iast.Source"/> struct to a dictionary
 /// </summary>
-internal static class SourceConverterDictionary
+internal static class SourceDictionaryConverter
 {
     // When not redacted output is:
     // { "origin": "http.request.parameter.name", "name": "name", "value": "value" }
@@ -20,7 +20,7 @@ internal static class SourceConverterDictionary
     // When redacted output is:
     // { "origin": "http.request.parameter.name", "name": "name", "redacted": true }
 
-    public static Dictionary<string, object> ToDictionary(Source source, int maxValueLength)
+    public static Dictionary<string, object> ToDictionary(this Source source, int maxValueLength)
     {
         var result = new Dictionary<string, object> { { "origin", SourceTypeUtils.GetString(source.Origin) } };
 
@@ -32,11 +32,11 @@ internal static class SourceConverterDictionary
         if (source is { IsRedacted: true, Value: not null })
         {
             result["redacted"] = true;
-            TruncationUtils.InsertTruncableValue(result, "pattern", source.RedactedValue, maxValueLength);
+            TruncationUtils.InsertTruncatableValue(result, "pattern", source.RedactedValue, maxValueLength);
         }
         else if (source.Value != null)
         {
-            TruncationUtils.InsertTruncableValue(result, "value", source.Value, maxValueLength);
+            TruncationUtils.InsertTruncatableValue(result, "value", source.Value, maxValueLength);
         }
 
         return result;

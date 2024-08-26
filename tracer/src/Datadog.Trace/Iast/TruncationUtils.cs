@@ -34,7 +34,7 @@ internal static class TruncationUtils
         }
     }
 
-    public static void InsertTruncableValue(Dictionary<string, object> dict, string key, string? value, int maxValueLength)
+    public static void InsertTruncatableValue(Dictionary<string, object> dict, string key, string? value, int maxValueLength)
     {
         if (value is null)
         {
