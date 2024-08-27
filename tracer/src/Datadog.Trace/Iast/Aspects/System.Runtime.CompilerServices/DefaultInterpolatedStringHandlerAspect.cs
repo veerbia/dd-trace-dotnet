@@ -27,8 +27,8 @@ internal class DefaultInterpolatedStringHandlerAspect
     /// </summary>
     /// <param name="target"> DefaultInterpolatedStringHandler base instance </param>
     /// <param name="value"> value to append </param>
-    [AspectMethodReplace("System.Runtime.CompilerServices.DefaultInterpolatedStringHandlerrrr::AppendFormatted(System.String)")]
-    public static void AppendFormatted(DefaultInterpolatedStringHandler target, string? value)
+    [AspectMethodReplace("System.Runtime.CompilerServices.DefaultInterpolatedStringHandler::AppendFormatted(System.String)")]
+    public static void AppendFormatted(ref DefaultInterpolatedStringHandler target, string? value)
     {
         target.AppendFormatted(value);
         try
@@ -38,7 +38,6 @@ internal class DefaultInterpolatedStringHandlerAspect
                 var text = target.ToString();
                 var parameterLength = value.Length;
                 var initialLength = text.Length - parameterLength;
-                StringBuilderModuleImpl.OnStringBuilderAppendObject(text, initialLength, value, parameterLength, 0, parameterLength);
             }
         }
         catch (Exception ex)

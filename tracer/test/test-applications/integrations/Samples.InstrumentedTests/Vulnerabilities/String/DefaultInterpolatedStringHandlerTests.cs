@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using FluentAssertions;
 using Moq;
+using NHibernate.Mapping;
 using Xunit;
 
 namespace Samples.InstrumentedTests.Iast.Vulnerabilities.StringPropagation;
@@ -90,9 +92,24 @@ public class DefaultInterpolatedStringHandlerTests : InstrumentationTestsBase
     public void GivenATaintedString_WhenCallingToStringAndClear_ResultIsTainted()
     {
         DefaultInterpolatedStringHandler handler = new();
-        handler.AppendFormatted(TaintedString);
+        Aux(ref handler, TaintedString);
+        var result = handler.ToStringAndClear();
+        string h = TaintedString + " w ";
+        FormatTainted(result).Should().Be(":+-tainted-+:");
+    }
+
+    [Fact]
+    public void GivenATaintedString_WhenCallingToStringAndClear_ResultIsTainted333()
+    {
+        DefaultInterpolatedStringHandler handler = new();
+        Aux(ref handler, TaintedString);
         var result = handler.ToStringAndClear();
         FormatTainted(result).Should().Be(":+-tainted-+:");
+    }
+
+    private void Aux(ref DefaultInterpolatedStringHandler handler, string tainted)
+    {
+        handler.AppendFormatted(tainted, 0);
     }
 
 #endif
