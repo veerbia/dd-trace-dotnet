@@ -442,8 +442,12 @@ public class AspNetCore5IastTestsSpanTelemetryIastEnabled : AspNetCore5IastTests
         var filename = "Iast.JsonTagSizeExceeded.AspNetCore5.TelemetryEnabled";
         var url = "/Iast/TestJsonTagSizeExceeded?tainted=taint";
         IncludeAllHttpSpans = true;
-        await TryStartApp(new MockTracerAgent.AgentConfiguration { SpanMetaStructs = false });
-        var agent = Fixture.Agent;
+
+        var newFixture = new AspNetCoreTestFixture();
+        newFixture.SetOutput(Output);
+        await TryStartApp(newFixture, new MockTracerAgent.AgentConfiguration { SpanMetaStructs = false });
+
+        var agent = newFixture.Agent;
         var spans = await SendRequestsAsync(agent, new string[] { url });
         var spansFiltered = spans.Where(x => x.Type == SpanTypes.Web).ToList();
 

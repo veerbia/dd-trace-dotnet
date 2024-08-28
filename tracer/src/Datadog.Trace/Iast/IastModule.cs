@@ -714,15 +714,15 @@ internal static partial class IastModule
         var tags = new IastTags { IastEnabled = "1" };
         var scope = tracer.StartActiveInternal(operationName, tags: tags);
 
-        byte[]? iastEventMetaStruct = null;
-        var isMetaStructSupported = Iast.Instance.IsMetaStructSupported();
-        if (isMetaStructSupported)
+        if (Iast.Instance.IsMetaStructSupported())
         {
-            iastEventMetaStruct = vulnerabilityBatch?.ToMessagePack();
+            var iastEventMetaStruct = vulnerabilityBatch?.ToMessagePack();
             if (vulnerabilityBatch?.IsTruncated() == true)
             {
                 scope.Span.SetTag(Tags.IastMetaStructTagSizeExceeded, "1");
             }
+
+            scope.Span.SetMetaStruct(IastMetaStructKey, iastEventMetaStruct);
         }
         else
         {
@@ -731,11 +731,6 @@ internal static partial class IastModule
             {
                 scope.Span.SetTag(Tags.IastJsonTagSizeExceeded, "1");
             }
-        }
-
-        if (isMetaStructSupported)
-        {
-            scope.Span.SetMetaStruct(IastMetaStructKey, iastEventMetaStruct);
         }
 
         scope.Span.Type = SpanTypes.IastVulnerability;
