@@ -499,6 +499,7 @@ public class AspNetCore5IastTestsTwoVulnerabilityPerRequestIastEnabled : AspNetC
         var agent = Fixture.Agent;
         var spans = await SendRequestsAsync(agent, new string[] { url });
         var parentSpan = spans.First(x => x.ParentId == null);
+        MetaStructScrubbing(parentSpan);
         var childSpan = spans.First(x => x.ParentId == parentSpan.SpanId);
         var vulnerabilityJson = parentSpan.GetTag(Tags.IastJson);
         vulnerabilityJson.Should().Contain("\"spanId\": " + childSpan.SpanId);

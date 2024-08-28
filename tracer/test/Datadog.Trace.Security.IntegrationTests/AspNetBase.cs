@@ -141,34 +141,7 @@ namespace Datadog.Trace.Security.IntegrationTests
                                 target.Tags[Tags.AppSecJson] = orderedAppSecJson;
                             }
 
-                            if (target.MetaStruct != null)
-                            {
-                                // We want to retrieve the appsec event data from the meta struct to validate it in snapshots
-                                // But that's hard to debug if we only see the binary data
-                                // So move the meta struct appsec data to a fake tag to validate it in snapshots
-                                if (target.MetaStruct.TryGetValue("appsec", out var appsec))
-                                {
-                                    var appSecMetaStruct = MetaStructByteArrayToObject.Invoke(null, [appsec]);
-                                    var json = JsonConvert.SerializeObject(appSecMetaStruct);
-                                    var obj = JsonConvert.DeserializeObject<AppSecJson>(json);
-                                    var orderedJson = JsonConvert.SerializeObject(obj, _jsonSerializerSettingsOrderProperty);
-                                    target.Tags[Tags.AppSecJson] = orderedJson;
-
-                                    target.MetaStruct.Remove("appsec");
-
-                                    // Let the snapshot know that the data comes from the meta struct
-                                    if (forceMetaStruct)
-                                    {
-                                        target.Tags[Tags.AppSecJson + ".metastruct.test"] = "true";
-                                    }
-                                }
-
-                                // Remove all data from meta structs keys, no need to get the binary data for other keys
-                                foreach (var key in target.MetaStruct.Keys.ToList())
-                                {
-                                    target.MetaStruct[key] = [];
-                                }
-                            }
+                            MetaStructScrubbing(target, forceMetaStruct);
 
                             return VerifyHelper.ScrubStringTags(target, target.Tags);
                         });
@@ -198,6 +171,55 @@ namespace Datadog.Trace.Security.IntegrationTests
             await Verifier.Verify(spans, settings)
                           .UseMethodName(methodNameOverride ?? "_")
                           .UseTypeName(testName ?? GetTestName());
+        }
+
+        public void MetaStructScrubbing(MockSpan target, bool forceMetaStruct = false)
+        {
+            if (target.MetaStruct != null)
+            {
+                // We want to retrieve the appsec event data from the meta struct to validate it in snapshots
+                // But that's hard to debug if we only see the binary data
+                // So move the meta struct appsec data to a fake tag to validate it in snapshots
+                if (target.MetaStruct.TryGetValue("appsec", out var appsec))
+                {
+                    var appSecMetaStruct = MetaStructByteArrayToObject.Invoke(null, [appsec]);
+                    var json = JsonConvert.SerializeObject(appSecMetaStruct);
+                    var obj = JsonConvert.DeserializeObject<AppSecJson>(json);
+                    var orderedJson = JsonConvert.SerializeObject(obj, _jsonSerializerSettingsOrderProperty);
+                    target.Tags[Tags.AppSecJson] = orderedJson;
+
+                    target.MetaStruct.Remove("appsec");
+
+                    // Let the snapshot know that the data comes from the meta struct
+                    if (forceMetaStruct)
+                    {
+                        target.Tags[Tags.AppSecJson + ".metastruct.test"] = "true";
+                    }
+                }
+
+                if (target.MetaStruct.TryGetValue("iast", out var iast))
+                {
+                    var iastMetaStruct = MetaStructByteArrayToObject.Invoke(null, [iast]);
+                    var json = JsonConvert.SerializeObject(iastMetaStruct);
+                    var obj = JsonConvert.DeserializeObject(json);
+                    var orderedJson = JsonConvert.SerializeObject(obj, Formatting.Indented);
+                    target.Tags[Tags.IastJson] = orderedJson;
+
+                    target.MetaStruct.Remove("iast");
+
+                    // Let the snapshot know that the data comes from the meta struct
+                    if (forceMetaStruct)
+                    {
+                        target.Tags[Tags.IastJson + ".metastruct.test"] = "true";
+                    }
+                }
+
+                // Remove all data from meta structs keys, no need to get the binary data for other keys
+                foreach (var key in target.MetaStruct.Keys.ToList())
+                {
+                    target.MetaStruct[key] = [];
+                }
+            }
         }
 
         protected void SetClientIp(string ip)
