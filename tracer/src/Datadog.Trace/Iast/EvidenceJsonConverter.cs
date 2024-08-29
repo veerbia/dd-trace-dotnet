@@ -56,7 +56,7 @@ internal class EvidenceJsonConverter : JsonConverter<Evidence?>
 
     public override Evidence? ReadJson(JsonReader reader, Type objectType, Evidence? existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
-        throw new NotImplementedException();
+        return null;
     }
 
     public override void WriteJson(JsonWriter writer, Evidence? evidence, JsonSerializer serializer)

@@ -56,21 +56,21 @@ internal class EvidenceDictionaryConverter
         }
         else
         {
-            var valueParts = new List<object>();
+            var valueParts = new List<object>(evidence.Ranges.Length);
             if (_redactionEnabled)
             {
-                result["valueParts"] = ToRedactedDictionary(valueParts, evidence.Value!, evidence.Ranges, evidence.Sensitive);
+                result["valueParts"] = CreateRedactedValueParts(valueParts, evidence.Value!, evidence.Ranges, evidence.Sensitive);
             }
             else
             {
-                result["valueParts"] = ToJsonTaintedDictionary(valueParts, evidence.Value!, evidence.Ranges);
+                result["valueParts"] = CreateTaintedValueParts(valueParts, evidence.Value!, evidence.Ranges);
             }
         }
 
         return result;
     }
 
-    private List<object> ToJsonTaintedDictionary(List<object> valueParts, string value, Range[] ranges)
+    private List<object> CreateTaintedValueParts(List<object> valueParts, string value, Range[] ranges)
     {
         var start = 0;
         foreach (var range in ranges)
@@ -146,7 +146,7 @@ internal class EvidenceDictionaryConverter
         }
     }
 
-    private List<object> ToRedactedDictionary(List<object> valueParts, string value, Range[] ranges, Range[]? sensitiveRanges)
+    private List<object> CreateRedactedValueParts(List<object> valueParts, string value, Range[] ranges, Range[]? sensitiveRanges)
     {
         var tainted = new LinkedList<Range>(ranges);
         var sensitive = sensitiveRanges != null ? new LinkedList<Range>(sensitiveRanges) : new LinkedList<Range>();

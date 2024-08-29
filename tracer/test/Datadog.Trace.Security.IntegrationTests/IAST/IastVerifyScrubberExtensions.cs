@@ -68,6 +68,12 @@ namespace Datadog.Trace.Security.IntegrationTests.IAST
                             if (target.MetaStruct != null)
                             {
                                 IastMetaStructScrubbing(target, forceMetaStruct);
+
+                                // Remove all data from meta structs keys, no need to get the binary data for other keys
+                                foreach (var key in target.MetaStruct.Keys.ToList())
+                                {
+                                    target.MetaStruct[key] = [];
+                                }
                             }
 
                             return VerifyHelper.ScrubStringTags(target, target.Tags);
@@ -77,7 +83,7 @@ namespace Datadog.Trace.Security.IntegrationTests.IAST
             return settings;
         }
 
-        private static void IastMetaStructScrubbing(MockSpan target, bool forceMetaStruct = false)
+        public static void IastMetaStructScrubbing(MockSpan target, bool forceMetaStruct = false)
         {
             // We want to retrieve the iast data from the meta struct to validate it in snapshots
             // But that's hard to debug if we only see the binary data
@@ -97,12 +103,6 @@ namespace Datadog.Trace.Security.IntegrationTests.IAST
                 {
                     target.Tags[Tags.IastJson + ".metastruct.test"] = "true";
                 }
-            }
-
-            // Remove all data from meta structs keys, no need to get the binary data for other keys
-            foreach (var key in target.MetaStruct.Keys.ToList())
-            {
-                target.MetaStruct[key] = [];
             }
         }
     }
