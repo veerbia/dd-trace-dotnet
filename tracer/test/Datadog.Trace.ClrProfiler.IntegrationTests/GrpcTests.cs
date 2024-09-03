@@ -203,6 +203,7 @@ namespace Datadog.Trace.ClrProfiler.IntegrationTests
         {
             _usesAspNetCore = usesAspNetCore;
             SetEnvironmentVariable(ConfigurationKeys.GrpcTags, MetadataHeaders);
+            SetEnvironmentVariable(ConfigurationKeys.DebugEnabled, "1");
         }
 
         /// <summary>

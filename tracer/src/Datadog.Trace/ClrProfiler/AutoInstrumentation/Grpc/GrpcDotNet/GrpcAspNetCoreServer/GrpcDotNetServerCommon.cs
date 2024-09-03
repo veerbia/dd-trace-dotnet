@@ -23,7 +23,17 @@ namespace Datadog.Trace.ClrProfiler.AutoInstrumentation.Grpc.GrpcDotNet.GrpcAspN
 
         public static bool IsASupportedVersion<TTarget>()
         {
-            return SupportedVersionByTypeCache<TTarget>.IsSupported;
+            var isSupported = SupportedVersionByTypeCache<TTarget>.IsSupported;
+            if (SupportedVersionByTypeCache<TTarget>.Version is { } version)
+            {
+                Log.Debug("Version {AssemblyVersion} is {Supported}.", version, isSupported ? "supported" : "not supported");
+            }
+            else
+            {
+                Log.Debug("Error fetching assembly version, not supported");
+            }
+
+            return isSupported;
         }
 
         public static Scope? CreateServerSpan<T>(Tracer tracer, T instance, HttpRequest requestMessage)
@@ -104,6 +114,7 @@ namespace Datadog.Trace.ClrProfiler.AutoInstrumentation.Grpc.GrpcDotNet.GrpcAspN
                 // to know if we should instrument this library.
                 if (typeof(TTarget).TryGetAssemblyFileVersionFromType(out var version))
                 {
+                    Version = version;
                     // Grpc.AspNetCore.Server 2.27.0 is the minimum version supported by this implementation.
                     IsSupported = version >= new Version(2, 27, 0);
                 }
@@ -115,6 +126,8 @@ namespace Datadog.Trace.ClrProfiler.AutoInstrumentation.Grpc.GrpcDotNet.GrpcAspN
 
             // ReSharper disable once StaticMemberInGenericType
             public static bool IsSupported { get; }
+
+            public static Version? Version { get; }
         }
     }
 }
