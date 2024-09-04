@@ -91,10 +91,8 @@ namespace Datadog.Trace.Security.IntegrationTests.IAST
             if (target.MetaStruct.TryGetValue("iast", out var iast))
             {
                 var iastMetaStruct = MetaStructByteArrayToObject.Invoke(null, [iast]);
-                var json = JsonConvert.SerializeObject(iastMetaStruct);
-                var obj = JsonConvert.DeserializeObject(json);
-                var orderedJson = JsonConvert.SerializeObject(obj, Formatting.Indented);
-                target.Tags[Tags.IastJson] = orderedJson;
+                var json = JsonConvert.SerializeObject(iastMetaStruct, Formatting.Indented);
+                target.Tags[Tags.IastJson] = json;
 
                 target.MetaStruct.Remove("iast");
 
