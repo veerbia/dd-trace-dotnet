@@ -11,6 +11,7 @@ using Datadog.Trace.ClrProfiler.CallTarget;
 using Datadog.Trace.Configuration;
 using Datadog.Trace.ExtensionMethods;
 using Datadog.Trace.Headers;
+using Datadog.Trace.Logging;
 using Datadog.Trace.Tagging;
 using Microsoft.AspNetCore.Http;
 
@@ -32,6 +33,8 @@ namespace Datadog.Trace.ClrProfiler.AutoInstrumentation.Grpc.GrpcDotNet.GrpcAspN
     [EditorBrowsable(EditorBrowsableState.Never)]
     public class GrpcProtocolHelpersBuildHttpErrorResponseIntegration
     {
+        private static readonly IDatadogLogger Log = DatadogLogging.GetLoggerFor(typeof(GrpcDotNetServerCommon));
+
         /// <summary>
         /// OnMethodBegin callback
         /// </summary>

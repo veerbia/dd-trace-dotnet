@@ -26,11 +26,11 @@ namespace Datadog.Trace.ClrProfiler.AutoInstrumentation.Grpc.GrpcDotNet.GrpcAspN
             var isSupported = SupportedVersionByTypeCache<TTarget>.IsSupported;
             if (SupportedVersionByTypeCache<TTarget>.Version is { } version)
             {
-                Log.Debug("Version {AssemblyVersion} is {Supported}.", version, isSupported ? "supported" : "not supported");
+                Log.Debug("Version {AssemblyVersion} of {Assembly} from type {Type} is {Supported}.", version, typeof(TTarget).Assembly.FullName, typeof(TTarget).FullName, isSupported ? "supported" : "not supported");
             }
             else
             {
-                Log.Debug("Error fetching assembly version, not supported");
+                Log.Debug("Error fetching assembly version of {Assembly} from type {Type}, not supported", typeof(TTarget).Assembly.FullName, typeof(TTarget).FullName);
             }
 
             return isSupported;
