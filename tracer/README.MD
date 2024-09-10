@@ -101,6 +101,8 @@ You can use Rider and CLion to develop on macOS. Building and testing can be don
 brew install cmake
 ```
 
+### Running tests
+
 ```bash
 # Clean and build the main tracer project
 ./build.sh Clean BuildTracerHome
