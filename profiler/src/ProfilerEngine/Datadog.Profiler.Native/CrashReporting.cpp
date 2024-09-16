@@ -291,7 +291,7 @@ int32_t CrashReporting::Send()
 
 int32_t CrashReporting::WriteToFile(const char* url)
 {
-    auto endpoint = ddog_endpoint_from_filename(libdatadog::FfiHelper::StringToCharSlice(std::string_view(url)));
+    auto endpoint = ddog_endpoint_from_url(libdatadog::FfiHelper::StringToCharSlice(std::string_view(url)));
     auto result = ddog_crasht_CrashInfo_upload_to_endpoint(&_crashInfo, endpoint);
 
     on_leave { ddog_endpoint_drop(endpoint); };
