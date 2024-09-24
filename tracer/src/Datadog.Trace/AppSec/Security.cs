@@ -599,13 +599,14 @@ namespace Datadog.Trace.AppSec
 
         internal bool IsMetaStructSupported()
         {
-            if (_discoveryService is null)
+            return true;
+            /*if (_discoveryService is null)
             {
                 _discoveryService = Tracer.Instance.TracerManager.DiscoveryService;
                 _discoveryService?.SubscribeToChanges(config => _spanMetaStructs = config.SpanMetaStructs);
             }
 
-            return _spanMetaStructs;
+            return _spanMetaStructs;*/
         }
 
         internal void UpdateActiveAddresses()
